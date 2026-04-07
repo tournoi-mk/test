@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Mario Kart Tournoi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #E8001D;
+      --blue: #0052A5;
+      --yellow: #FFD700;
+      --dark: #07071a;
+      --green: #00c97a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--dark);
+      font-family: 'Exo 2', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,82,165,0.18), transparent 70%),
+        linear-gradient(180deg, #060610 0%, #0A0A1E 100%);
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(7,7,26,0.97);
+    }
+
+    .login-box {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 40px 36px;
+      text-align: center;
+      width: 340px;
+    }
+
+    .login-icon { font-size: 3rem; margin-bottom: 12px; }
+
+    .login-title {
+      font-family: 'Russo One', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--yellow);
+      margin-bottom: 6px;
+    }
+
+    .login-sub {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 24px;
+      letter-spacing: 0.08em;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      text-align: center;
+      letter-spacing: 0.15em;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .login-input:focus { border-color: var(--yellow); }
+    .login-input.error { border-color: var(--red); }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.22));
+      border: 1px solid var(--yellow);
+      border-radius: 8px;
+      color: var(--yellow);
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .login-btn:hover { background: rgba(255,215,0,0.28); }
+
+    .login-error {
+      color: #ff8090;
+      font-size: 0.78rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      position: sticky; top: 0; z-index: 100;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 28px;
+      min-height: 64px;
+      background: rgba(7,7,26,0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(232,0,29,0.3);
+      box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+      gap: 16px;
+    }
+
+    .brand { font-family: 'Russo One', sans-serif; font-size: 0.9rem; letter-spacing: 0.1em; color: var(--yellow); text-decoration: none; text-shadow: 0 0 12px rgba(255,215,0,0.6); white-space: nowrap; }
+    .brand span { color: rgba(255,255,255,0.5); }
+    .top-title { text-align: center; font-family: 'Russo One', sans-serif; font-size: 1.2rem; letter-spacing: 0.15em; color: #ff8090; }
+    .back-btn { font-size: 0.8rem; color: rgba(255,255,255,0.4); text-decoration: none; letter-spacing: 0.1em; transition: color 0.2s; justify-self: end; }
+    .back-btn:hover { color: var(--red); }
+
+    /* ── PAGE ── */
+    .page {
+      position: relative; z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── SECTION ── */
+    .admin-section {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .admin-section-title {
+      font-family: 'Russo One', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ast-red    { color: #ff8090; border-left: 3px solid var(--red); padding-left: 12px; }
+    .ast-blue   { color: #6eb4ff; border-left: 3px solid var(--blue); padding-left: 12px; }
+    .ast-yellow { color: var(--yellow); border-left: 3px solid var(--yellow); padding-left: 12px; }
+    .ast-green  { color: #6fffbe; border-left: 3px solid var(--green); padding-left: 12px; }
+
+    /* ── INPUTS ── */
+    label {
+      display: block;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    input[type=text], input[type=password], select, textarea {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 0.88rem;
+      padding: 9px 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--yellow); }
+    select option { background: #0A0A1E; }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-size: 0.8rem;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+
+    .field-group {
+      margin-bottom: 14px;
+    }
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+    @media (max-width: 800px) {
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid;
+    }
+
+    .btn-yellow {
+      background: rgba(255,215,0,0.1);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+    .btn-yellow:hover { background: rgba(255,215,0,0.22); }
+
+    .btn-red {
+      background: rgba(232,0,29,0.1);
+      border-color: var(--red);
+      color: #ff8090;
+    }
+    .btn-red:hover { background: rgba(232,0,29,0.2); }
+
+    .btn-blue {
+      background: rgba(0,82,165,0.12);
+      border-color: var(--blue);
+      color: #6eb4ff;
+    }
+    .btn-blue:hover { background: rgba(0,82,165,0.22); }
+
+    .btn-green {
+      background: rgba(0,201,122,0.1);
+      border-color: var(--green);
+      color: #6fffbe;
+    }
+    .btn-green:hover { background: rgba(0,201,122,0.2); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.45);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+    /* ── BETTOR LIST ── */
+    .bettor-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .bettor-table th {
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.09em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      padding: 7px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .bettor-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+    }
+
+    .bettor-table tr:hover td { background: rgba(255,255,255,0.025); }
+    .bettor-table tr:last-child td { border-bottom: none; }
+
+    .bettor-name-cell {
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .phase-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: 20px;
+      font-family: 'Russo One', sans-serif;
+      margin-right: 3px;
+      border: 1px solid;
+    }
+    .pt-p0 { background: rgba(79,143,240,0.1); border-color: rgba(79,143,240,0.3); color: #8ec1ff; }
+    .pt-p1 { background: rgba(232,0,29,0.08); border-color: rgba(232,0,29,0.3); color: #ff8090; }
+    .pt-p2 { background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.3); color: var(--yellow); }
+
+    .del-btn {
+      padding: 3px 9px;
+      border-radius: 5px;
+      background: rgba(232,0,29,0.1);
+      border: 1px solid rgba(232,0,29,0.3);
+      color: #ff8090;
+      font-size: 0.68rem;
+      cursor: pointer;
+      font-family: 'Russo One', sans-serif;
+      transition: background 0.15s;
+    }
+    .del-btn:hover { background: rgba(232,0,29,0.22); }
+
+    /* ── MATCH RESULT CARDS ── */
+    .match-result-section { margin-bottom: 24px; }
+
+    .match-result-section h3 {
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .match-result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .match-result-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .mrc-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .mrc-head-blue   { background: rgba(0,82,165,0.22); }
+    .mrc-head-red    { background: rgba(232,0,29,0.18); }
+    .mrc-head-yellow { background: rgba(255,215,0,0.12); }
+
+    .mrc-name {
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+    }
+
+    .mrc-tag {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .played-badge {
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(0,201,122,0.15);
+      border: 1px solid rgba(0,201,122,0.35);
+      color: #6fffbe;
+      font-family: 'Russo One', sans-serif;
+    }
+
+    .unplayed-badge {
+      font-size: 0.62rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.3);
+      font-family: 'Russo One', sans-serif;
+    }
+
+    .mrc-body { padding: 10px 13px; }
+
+    .mrc-player-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .mrc-player-name {
+      flex: 1;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.78);
+    }
+
+    .mrc-player-name.tbd { color: rgba(255,255,255,0.22); font-style: italic; }
+
+    .mrc-rank-select {
+      width: 90px;
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.76rem;
+      font-family: 'Exo 2', sans-serif;
+      outline: none;
+    }
+    .mrc-rank-select:focus { border-color: var(--yellow); }
+
+    .save-match-btn {
+      width: 100%;
+      padding: 7px;
+      margin-top: 6px;
+      background: rgba(0,201,122,0.1);
+      border: 1px solid rgba(0,201,122,0.35);
+      border-radius: 6px;
+      color: #6fffbe;
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .save-match-btn:hover { background: rgba(0,201,122,0.2); }
+
+    /* ── WINNER RESULTS ── */
+    .winner-result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 700px) { .winner-result-grid { grid-template-columns: 1fr; } }
+
+    .winner-result-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .wrc-title {
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.07em;
+      margin-bottom: 10px;
+    }
+    .wrc-t1 { color: #6eb4ff; }
+    .wrc-t2 { color: #ff8090; }
+    .wrc-t3 { color: var(--yellow); }
+
+    /* ── NOTIFICATIONS ── */
+    .notif {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 500;
+      background: #0c0d22;
+      border: 1px solid rgba(0,201,122,0.4);
+      border-radius: 10px;
+      padding: 12px 20px;
+      color: #6fffbe;
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    .notif.show { transform: translateY(0); opacity: 1; }
+    .notif.err { border-color: rgba(232,0,29,0.45); color: #ff8090; }
+
+    /* ── ELIGIBILITY TOGGLES ── */
+    .elig-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .elig-row:last-child { border-bottom: none; }
+
+    .elig-name { flex: 1; font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+
+    .toggle-wrap { display: flex; gap: 6px; }
+
+    .toggle-btn {
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-family: 'Russo One', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.07em;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.15s;
+    }
+    .toggle-btn.off { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.25); }
+    .toggle-btn.on-p1 { background: rgba(232,0,29,0.12); border-color: rgba(232,0,29,0.4); color: #ff8090; }
+    .toggle-btn.on-p2 { background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.4); color: var(--yellow); }
+
+    /* ── IMPORT BOX ── */
+    .import-help {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .import-help code {
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 0.75rem;
+      color: #8ec1ff;
+    }
+
+    /* ── MISC ── */
+    .note {
+      font-size: 0.76rem;
+      color: rgba(255,255,255,0.28);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .separator { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0; }
+
+    .data-raw {
+      font-size: 0.72rem;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: monospace;
+      color: rgba(255,255,255,0.45);
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-family: 'Russo One', sans-serif;
+      font-size: 1.8rem;
+      color: #ff8090;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 0.08em;
+    }
+    .page-sub {
+      text-align: center;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      margin-bottom: 32px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">ACCÈS ADMIN</div>
+    <div class="login-sub">TOURNOI MARIO KART · ORGANISATEUR</div>
+    <input type="password" class="login-input" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">ENTRER</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect.</div>
+  </div>
+</div>
+
+<!-- ── MAIN (masqué jusqu'au login) ── -->
+<div id="main-content" style="display:none">
+
+<div class="top-bar">
+  <div style="justify-self:start"><a href="index.html" class="brand">🏆 <span>TOURNOI INTERNE</span> MARIO KART</a></div>
+  <div class="top-title">⚙️ ADMIN</div>
+  <a href="index.html" class="back-btn">← Accueil</a>
+</div>
+
+<div class="page">
+  <div class="page-title">⚙️ ADMINISTRATION</div>
+  <p class="page-sub">Saisie des résultats et gestion des paris</p>
+
+  <!-- ══════════════════════════════════
+       1. RÉSULTATS GAGNANTS FINAUX
+  ══════════════════════════════════ -->
+  <div class="admin-section">
+    <div class="admin-section-title ast-yellow">🏆 Vainqueurs réels des tableaux</div>
+    <p class="note" style="margin-bottom:16px;">Renseignez le vainqueur réel de chaque tableau dès qu'il est connu. Ce sont ces noms qui servent à calculer les points "gagnant final".</p>
+    <div class="winner-result-grid">
+      <div class="winner-result-card">
+        <div class="wrc-title wrc-t1">🔵 Vainqueur Tableau 1</div>
+        <input type="text" id="real-winner-t1" placeholder="Nom du vainqueur">
+      </div>
+      <div class="winner-result-card">
+        <div class="wrc-title wrc-t2">🔴 Vainqueur Tableau 2</div>
+        <input type="text" id="real-winner-t2" placeholder="Nom du vainqueur">
+      </div>
+      <div class="winner-result-card">
+        <div class="wrc-title wrc-t3">🟡 Vainqueur Tableau 3</div>
+        <input type="text" id="real-winner-t3" placeholder="Nom du vainqueur">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-yellow" onclick="saveWinners()">💾 Enregistrer les vainqueurs</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       2. RÉSULTATS DES MATCHS
+  ══════════════════════════════════ -->
+  <div class="admin-section">
+    <div class="admin-section-title ast-red">🏁 Résultats des matchs</div>
+    <p class="note" style="margin-bottom:18px;">Pour chaque match joué, indiquez le classement réel (1er à 4e) et cliquez "Valider". Un match validé est verrouillé pour les parieurs.</p>
+    <div id="match-results-container">
+      <p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.85rem;">Chargement des matchs depuis tableaux.html…</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       3. AJOUTER UN PARIEUR
+  ══════════════════════════════════ -->
+  <div class="admin-section">
+    <div class="admin-section-title ast-blue">➕ Ajouter / modifier un parieur</div>
+    <p class="import-help">
+      Copiez les paris reçus par e-mail et renseignez les informations ci-dessous.<br>
+      Le champ <code>Phase</code> indique quand le pari a été envoyé (Avant tournoi, Après Tour 1, Après Tour 2).<br>
+      <strong>Important :</strong> un parieur ne peut apparaître qu'une fois par phase. Si le nom existe déjà pour cette phase, il sera refusé.
+    </p>
+
+    <div class="grid-2">
+      <div class="field-group">
+        <label>Nom du parieur</label>
+        <input type="text" id="add-name" placeholder="Prénom Nom" autocomplete="off">
+      </div>
+      <div class="field-group">
+        <label>Phase du pari</label>
+        <select id="add-phase">
+          <option value="p0">🏁 Avant le tournoi (20 pts vainqueur)</option>
+          <option value="p1">🔀 Après Tour 1 (10 pts vainqueur)</option>
+          <option value="p2">🏆 Après Tour 2 (5 pts vainqueur)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Gagnants finaux -->
+    <div style="font-family:'Russo One',sans-serif;font-size:0.78rem;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:12px;">GAGNANTS FINAUX PRÉDITS</div>
+    <div class="grid-3">
+      <div class="field-group">
+        <label>Vainqueur Tableau 1</label>
+        <input type="text" id="add-w1" placeholder="Nom du joueur">
+      </div>
+      <div class="field-group">
+        <label>Vainqueur Tableau 2</label>
+        <input type="text" id="add-w2" placeholder="Nom du joueur">
+      </div>
+      <div class="field-group">
+        <label>Vainqueur Tableau 3</label>
+        <input type="text" id="add-w3" placeholder="Nom du joueur">
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <!-- Paris matchs -->
+    <div style="font-family:'Russo One',sans-serif;font-size:0.78rem;color:rgba(255,255,255,0.4);letter-spacing:0.08em;margin-bottom:14px;">
+      PARIS SUR LES MATCHS
+      <span style="font-family:'Exo 2',sans-serif;font-weight:400;color:rgba(255,255,255,0.25);margin-left:8px;font-size:0.72rem;">(un champ par ligne : NomJoueur=rang, ex: Julie=1)</span>
+    </div>
+    <div id="match-bets-input-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-blue" onclick="addBettor()">✅ Ajouter ce parieur</button>
+      <button class="btn btn-ghost" onclick="clearAddForm()">🗑 Vider le formulaire</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       4. ÉLIGIBILITÉ PHASES 1 & 2
+  ══════════════════════════════════ -->
+  <div class="admin-section">
+    <div class="admin-section-title ast-green">🔓 Éligibilité aux paris des phases 1 & 2</div>
+    <p class="note" style="margin-bottom:16px;">
+      Activez pour chaque parieur s'il est éligible aux paris des phases 1 (après Tour 1) et/ou 2 (après Tour 2).<br>
+      Rappel règles : phase 1 = joueurs des matchs 1&2 du Tour 2 · phase 2 = joueurs du match 1 du Tour 3.
+    </p>
+    <div id="eligibility-list"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       5. LISTE DES PARIEURS
+  ══════════════════════════════════ -->
+  <div class="admin-section">
+    <div class="admin-section-title ast-yellow">👥 Parieurs enregistrés</div>
+    <div id="bettors-list-wrap">
+      <p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.85rem;">Aucun parieur enregistré.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       6. EXPORT / SAUVEGARDE
+  ══════════════════════════════════ -->
+  <div class="admin-section">
+    <div class="admin-section-title ast-blue">💾 Sauvegarde & Export</div>
+    <p class="note" style="margin-bottom:14px;">Les données sont stockées dans le localStorage de ce navigateur. Exportez-les en JSON pour les sauvegarder ou les partager.</p>
+    <div class="btn-row">
+      <button class="btn btn-blue" onclick="exportData()">📤 Exporter JSON</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">📥 Importer JSON</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+      <button class="btn btn-red" onclick="confirmClearData()">🗑 Réinitialiser tout</button>
+    </div>
+    <div class="separator"></div>
+    <label>Aperçu JSON brut</label>
+    <div class="data-raw" id="raw-preview">—</div>
+  </div>
+
+</div><!-- .page -->
+</div><!-- #main-content -->
+
+<div class="notif" id="notif"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  ADMIN.HTML — gestion complète du tournoi
+//  Stockage : localStorage key "mk_tournament_data"
+// ══════════════════════════════════════════════════════════════════
+
+// ── MOT DE PASSE ADMIN ──────────────────────────────────────────
+// Changez ce mot de passe avant de déployer !
+const ADMIN_PASSWORD = "mariokart2025";
+
+function doLogin() {
+  const v = document.getElementById('pwd-input').value;
+  if (v === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    initAdmin();
+  } else {
+    const inp = document.getElementById('pwd-input');
+    inp.classList.add('error');
+    document.getElementById('login-error').style.display = 'block';
+    setTimeout(() => inp.classList.remove('error'), 800);
+  }
+}
+
+// ── DONNÉES ─────────────────────────────────────────────────────
+const LS_KEY = 'mk_tournament_data';
+
+function getData() {
+  try {
+    return JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {
+      bettors: [],
+      results: {},
+      lastUpdate: null
+    };
+  } catch { return { bettors: [], results: {}, lastUpdate: null }; }
+}
+
+function saveData(data) {
+  data.lastUpdate = new Date().toISOString();
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+  updateRawPreview(data);
+}
+
+function updateRawPreview(data) {
+  const el = document.getElementById('raw-preview');
+  if (el) el.textContent = JSON.stringify(data, null, 2).slice(0, 2000) + '…';
+}
+
+// ── NOTIFICATION ─────────────────────────────────────────────────
+let notifTimer;
+function notify(msg, isError = false) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'notif show' + (isError ? ' err' : '');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => el.className = 'notif', 2800);
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+let MATCH_DEFS = []; // liste des matchs chargés depuis tableaux.html
+
+async function initAdmin() {
+  try {
+    MATCH_DEFS = await loadMatchDefsFromTableaux();
+  } catch(e) {
+    MATCH_DEFS = [];
+    notify('Impossible de charger tableaux.html : ' + e.message, true);
+  }
+
+  const data = getData();
+  loadWinnerFields(data);
+  renderMatchResults(data);
+  renderMatchBetsInputs();
+  renderBettorsList(data);
+  renderEligibilityList(data);
+  updateRawPreview(data);
+}
+
+// ── CHARGEMENT DES MATCHS ────────────────────────────────────────
+async function loadMatchDefsFromTableaux() {
+  const res = await fetch('tableaux.html', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Fetch failed');
+  const html = await res.text();
+  const m = html.match(/const\s+BRACKETS\s*=\s*(\[[\s\S]*?\]);/);
+  if (!m) throw new Error('BRACKETS introuvable');
+  const brackets = new Function('return ' + m[1])();
+
+  const defs = [];
+
+  brackets.forEach(br => {
+    const tab = br.tableNumber;
+    const color = tab === 1 ? 'blue' : tab === 2 ? 'red' : 'yellow';
+
+    br.groups.forEach((g, gi) => {
+      defs.push({
+        key: `t${tab}_tour1_g${gi}`,
+        tour: 1,
+        tableau: tab,
+        name: g.groupName,
+        tag: br.tableTitle,
+        color,
+        players: [...g.players]
+      });
+    });
+
+    br.tour2Matches.forEach((m, mi) => {
+      defs.push({
+        key: `t${tab}_tour2_m${mi}`,
+        tour: 2,
+        tableau: tab,
+        name: m.matchName,
+        tag: m.matchTag,
+        color,
+        players: [...m.players]
+      });
+    });
+
+    br.tour3Matches.forEach((m, mi) => {
+      defs.push({
+        key: `t${tab}_tour3_m${mi}`,
+        tour: 3,
+        tableau: tab,
+        name: m.matchName,
+        tag: m.matchTag,
+        color,
+        players: [...m.players]
+      });
+    });
+  });
+
+  return defs;
+}
+
+// ── VAINQUEURS RÉELS ─────────────────────────────────────────────
+function loadWinnerFields(data) {
+  const r = data.results || {};
+  ['t1','t2','t3'].forEach(t => {
+    const el = document.getElementById(`real-winner-${t}`);
+    if (el) el.value = r[`winner_${t}`] || '';
+  });
+}
+
+function saveWinners() {
+  const data = getData();
+  if (!data.results) data.results = {};
+  ['t1','t2','t3'].forEach(t => {
+    const v = (document.getElementById(`real-winner-${t}`)?.value || '').trim();
+    data.results[`winner_${t}`] = v || null;
+  });
+  saveData(data);
+  notify('✅ Vainqueurs enregistrés !');
+}
+
+// ── RÉSULTATS MATCHS ─────────────────────────────────────────────
+function renderMatchResults(data) {
+  const container = document.getElementById('match-results-container');
+  if (!container) return;
+
+  if (MATCH_DEFS.length === 0) {
+    container.innerHTML = '<p style="color:rgba(255,255,255,0.3);font-style:italic;font-size:0.85rem;">Aucun match chargé. Vérifiez que tableaux.html est accessible.</p>';
+    return;
+  }
+
+  const results = data.results || {};
+
+  const tours = [1, 2, 3];
+  const tourLabels = { 1: '🏁 Tour 1 — Poules', 2: '🔀 Tour 2', 3: '🏆 Tour 3 — Classement final' };
+
+  let html = '';
+  tours.forEach(tour => {
+    const tourMatches = MATCH_DEFS.filter(d => d.tour === tour);
+    if (tourMatches.length === 0) return;
+
+    // Groupe par tableau
+    const byTab = {};
+    tourMatches.forEach(m => {
+      if (!byTab[m.tableau]) byTab[m.tableau] = [];
+      byTab[m.tableau].push(m);
+    });
+
+    html += `<div class="match-result-section"><h3>${tourLabels[tour]}</h3><div class="match-result-grid">`;
+
+    Object.keys(byTab).forEach(tab => {
+      byTab[tab].forEach(match => {
+        const res = results[match.key] || {};
+        const isPlayed = !!res.played;
+        const ranks = res.ranks || {};
+
+        const playerRows = match.players.map(p => {
+          const tbd = !p || p === '-';
+          const currentRank = tbd ? '' : (ranks[p] || '');
+          return `<div class="mrc-player-row">
+            <span class="mrc-player-name${tbd ? ' tbd' : ''}">${tbd ? 'À définir' : esc(p)}</span>
+            ${tbd ? '<span style="width:90px"></span>' : `
+              <select class="mrc-rank-select" id="rank-${match.key}-${esc2(p)}" ${isPlayed ? 'disabled' : ''}>
+                <option value="">—</option>
+                <option value="1" ${currentRank==='1'?'selected':''}>🥇 1er</option>
+                <option value="2" ${currentRank==='2'?'selected':''}>🥈 2e</option>
+                <option value="3" ${currentRank==='3'?'selected':''}>🥉 3e</option>
+                <option value="4" ${currentRank==='4'?'selected':''}>🍌 4e</option>
+              </select>`}
+          </div>`;
+        }).join('');
+
+        html += `
+          <div class="match-result-card">
+            <div class="mrc-head mrc-head-${match.color}">
+              <span class="mrc-name">T${match.tableau} · ${match.name}</span>
+              <span class="${isPlayed ? 'played-badge' : 'unplayed-badge'}">${isPlayed ? '✓ Joué' : '— En attente'}</span>
+            </div>
+            <div class="mrc-body">
+              ${playerRows}
+              <div style="display:flex;gap:6px;margin-top:8px;">
+                <button class="save-match-btn" onclick="saveMatchResult('${match.key}', ${JSON.stringify(match.players)})"
+                  ${isPlayed ? 'style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)"' : ''}>
+                  ${isPlayed ? '🔄 Modifier le résultat' : '✅ Valider ce match'}
+                </button>
+                ${isPlayed ? `<button class="save-match-btn" style="background:rgba(232,0,29,0.08);border-color:rgba(232,0,29,0.3);color:#ff8090;width:auto;padding:7px 12px;" onclick="unplayMatch('${match.key}')">✕</button>` : ''}
+              </div>
+            </div>
+          </div>`;
+      });
+    });
+
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function saveMatchResult(matchKey, players) {
+  const ranks = {};
+  let valid = true;
+  const rankValues = [];
+
+  players.forEach(p => {
+    if (!p || p === '-') return;
+    const sel = document.getElementById(`rank-${matchKey}-${esc2(p)}`);
+    const v = sel ? sel.value : '';
+    if (v) {
+      if (rankValues.includes(v)) { valid = false; }
+      rankValues.push(v);
+      ranks[p] = v;
+    }
+  });
+
+  if (!valid) {
+    notify('❌ Deux joueurs ne peuvent pas avoir le même rang !', true);
+    return;
+  }
+
+  const data = getData();
+  if (!data.results) data.results = {};
+  data.results[matchKey] = { played: true, ranks };
+  saveData(data);
+  renderMatchResults(data);
+  notify('✅ Résultat enregistré !');
+}
+
+function unplayMatch(matchKey) {
+  if (!confirm('Annuler le résultat de ce match ?')) return;
+  const data = getData();
+  if (data.results && data.results[matchKey]) {
+    data.results[matchKey] = { played: false, ranks: {} };
+  }
+  saveData(data);
+  renderMatchResults(data);
+  notify('Résultat annulé.');
+}
+
+// ── FORMULAIRE AJOUT PARIEUR ─────────────────────────────────────
+function renderMatchBetsInputs() {
+  const grid = document.getElementById('match-bets-input-grid');
+  if (!grid || MATCH_DEFS.length === 0) return;
+
+  const phase = document.getElementById('add-phase')?.value || 'p0';
+  const tourForPhase = { p0: 1, p1: 2, p2: 3 };
+  const tour = tourForPhase[phase] || 1;
+
+  const tourMatches = MATCH_DEFS.filter(d => d.tour === tour);
+
+  grid.innerHTML = tourMatches.map(m => {
+    const hasRealPlayers = m.players.some(p => p && p !== '-');
+    return `
+      <div>
+        <label>T${m.tableau} · ${m.name} <span style="opacity:0.4;font-size:0.65rem;">${m.tag}</span></label>
+        <textarea id="bet-${m.key}" placeholder="${m.players.filter(p=>p&&p!=='-').map((p,i) => `${p}=${i+1}`).join('\n')}"
+          style="min-height:${m.players.length * 22 + 20}px" ${!hasRealPlayers ? 'disabled style="opacity:0.3"' : ''}></textarea>
+      </div>`;
+  }).join('');
+}
+
+// Mettre à jour les champs quand on change de phase
+document.addEventListener('DOMContentLoaded', () => {});
+
+function addBettor() {
+  const name = (document.getElementById('add-name')?.value || '').trim();
+  if (!name) { notify('❌ Entrez un nom.', true); return; }
+
+  const phase = document.getElementById('add-phase')?.value || 'p0';
+  const data = getData();
+
+  // Vérifier doublon nom+phase
+  const existingForPhase = data.bettors.find(b => b.name.toLowerCase() === name.toLowerCase() && (b.phases || []).includes(phase));
+  if (existingForPhase) {
+    notify(`❌ ${name} a déjà parié pour cette phase !`, true);
+    return;
+  }
+
+  // Récupérer ou créer le parieur
+  let bettor = data.bettors.find(b => b.name.toLowerCase() === name.toLowerCase());
+  if (!bettor) {
+    bettor = { name, phases: [], bets: {}, winnerBets_p0: {}, winnerBets_p1: {}, winnerBets_p2: {}, eligiblePhase1: false, eligiblePhase2: false };
+    data.bettors.push(bettor);
+  }
+
+  // Ajouter la phase
+  if (!bettor.phases.includes(phase)) bettor.phases.push(phase);
+
+  // Gagnants finaux
+  const w1 = (document.getElementById('add-w1')?.value || '').trim();
+  const w2 = (document.getElementById('add-w2')?.value || '').trim();
+  const w3 = (document.getElementById('add-w3')?.value || '').trim();
+  if (w1) bettor[`winnerBets_${phase}`].t1 = w1;
+  if (w2) bettor[`winnerBets_${phase}`].t2 = w2;
+  if (w3) bettor[`winnerBets_${phase}`].t3 = w3;
+
+  // Paris matchs
+  const tourForPhase = { p0: 1, p1: 2, p2: 3 };
+  const tour = tourForPhase[phase] || 1;
+  const tourMatches = MATCH_DEFS.filter(d => d.tour === tour);
+
+  tourMatches.forEach(m => {
+    const ta = document.getElementById(`bet-${m.key}`);
+    if (!ta || !ta.value.trim()) return;
+    const matchBet = {};
+    ta.value.trim().split('\n').forEach(line => {
+      const [player, rank] = line.split('=').map(s => s.trim());
+      if (player && rank) matchBet[player] = rank;
+    });
+    if (Object.keys(matchBet).length > 0) {
+      bettor.bets[m.key] = matchBet;
+    }
+  });
+
+  saveData(data);
+  renderBettorsList(data);
+  renderEligibilityList(data);
+  clearAddForm();
+  notify(`✅ ${name} ajouté(e) (${phase}) !`);
+}
+
+function clearAddForm() {
+  document.getElementById('add-name').value = '';
+  document.getElementById('add-w1').value = '';
+  document.getElementById('add-w2').value = '';
+  document.getElementById('add-w3').value = '';
+  document.querySelectorAll('[id^="bet-"]').forEach(t => t.value = '');
+}
+
+// ── LISTE PARIEURS ───────────────────────────────────────────────
+function renderBettorsList(data) {
+  const wrap = document.getElementById('bettors-list-wrap');
+  const bettors = data.bettors || [];
+
+  if (bettors.length === 0) {
+    wrap.innerHTML = '<p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.85rem;">Aucun parieur enregistré.</p>';
+    return;
+  }
+
+  const results = data.results || {};
+
+  const rows = bettors.map(b => {
+    const score = computeScore(b, results);
+    const phaseBadges = (b.phases || []).map(p => {
+      const labels = { p0: 'Avant', p1: 'T1', p2: 'T2' };
+      return `<span class="phase-tag pt-${p}">${labels[p] || p}</span>`;
+    }).join('');
+
+    const winners = ['p0','p1','p2'].map(ph => {
+      const wb = b[`winnerBets_${ph}`] || {};
+      const parts = ['t1','t2','t3'].filter(t => wb[t]).map(t => `T${t.slice(1)}:${wb[t]}`);
+      return parts.length ? `<span style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-right:6px;">[${ph}] ${parts.join(' · ')}</span>` : '';
+    }).join('');
+
+    const matchBetCount = Object.keys(b.bets || {}).length;
+
+    return `<tr>
+      <td class="bettor-name-cell">${esc(b.name)}</td>
+      <td>${phaseBadges}</td>
+      <td>${winners || '<span style="color:rgba(255,255,255,0.2);font-size:0.72rem">—</span>'}</td>
+      <td style="text-align:right;font-size:0.8rem;color:rgba(255,255,255,0.4)">${matchBetCount} matchs pariés</td>
+      <td style="text-align:right;font-family:'Russo One',sans-serif;color:#8ec1ff">${score.total} pts</td>
+      <td><button class="del-btn" onclick="deleteBettor('${esc(b.name)}')">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <table class="bettor-table">
+      <thead><tr>
+        <th>Nom</th>
+        <th>Phases</th>
+        <th>Vainqueurs prédits</th>
+        <th style="text-align:right">Paris matchs</th>
+        <th style="text-align:right">Score actuel</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function deleteBettor(name) {
+  if (!confirm(`Supprimer ${name} ?`)) return;
+  const data = getData();
+  data.bettors = data.bettors.filter(b => b.name !== name);
+  saveData(data);
+  renderBettorsList(data);
+  renderEligibilityList(data);
+  notify(`🗑 ${name} supprimé(e).`);
+}
+
+// ── ÉLIGIBILITÉ ──────────────────────────────────────────────────
+function renderEligibilityList(data) {
+  const wrap = document.getElementById('eligibility-list');
+  const bettors = data.bettors || [];
+
+  if (bettors.length === 0) {
+    wrap.innerHTML = '<p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.82rem;">Aucun parieur.</p>';
+    return;
+  }
+
+  wrap.innerHTML = bettors.map(b => `
+    <div class="elig-row">
+      <div class="elig-name">${esc(b.name)}</div>
+      <div class="toggle-wrap">
+        <button class="toggle-btn ${b.eligiblePhase1 ? 'on-p1' : 'off'}" onclick="toggleElig('${esc(b.name)}','p1')">
+          Phase 1 (T1→T2)
+        </button>
+        <button class="toggle-btn ${b.eligiblePhase2 ? 'on-p2' : 'off'}" onclick="toggleElig('${esc(b.name)}','p2')">
+          Phase 2 (T2→T3)
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function toggleElig(name, phase) {
+  const data = getData();
+  const b = data.bettors.find(x => x.name === name);
+  if (!b) return;
+  const field = phase === 'p1' ? 'eligiblePhase1' : 'eligiblePhase2';
+  b[field] = !b[field];
+  saveData(data);
+  renderEligibilityList(data);
+  renderBettorsList(data);
+  notify(`${name} : éligibilité ${phase} → ${b[field] ? '✅ activée' : '❌ désactivée'}`);
+}
+
+// ── SCORE (copie de scores.html) ──────────────────────────────────
+function computeScore(bettor, results) {
+  let matchPts = 0, winnerPts = 0;
+  const bets = bettor.bets || {};
+  for (const matchKey of Object.keys(bets)) {
+    const res = results[matchKey];
+    if (!res || !res.played) continue;
+    const bet = bets[matchKey];
+    for (const [player, predictedRank] of Object.entries(bet)) {
+      if (res.ranks && res.ranks[player] && String(res.ranks[player]) === String(predictedRank)) matchPts++;
+    }
+  }
+  ['t1','t2','t3'].forEach(tab => {
+    const actual = results[`winner_${tab}`];
+    if (!actual) return;
+    const p0 = (bettor.winnerBets_p0 || {})[tab];
+    if (p0 && p0 === actual) winnerPts += 20;
+    const p1 = (bettor.winnerBets_p1 || {})[tab];
+    if (p1 && p1 === actual && bettor.eligiblePhase1) winnerPts += 10;
+    const p2 = (bettor.winnerBets_p2 || {})[tab];
+    if (p2 && p2 === actual && bettor.eligiblePhase2) winnerPts += 5;
+  });
+  return { total: matchPts + winnerPts, matchPts, winnerPts };
+}
+
+// ── EXPORT / IMPORT ──────────────────────────────────────────────
+function exportData() {
+  const data = getData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mk_paris_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.bettors || !data.results) throw new Error('Format invalide');
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      initAdmin();
+      notify('✅ Données importées !');
+    } catch {
+      notify('❌ Fichier JSON invalide.', true);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function confirmClearData() {
+  if (confirm('⚠️ TOUT supprimer ? Cette action est irréversible.')) {
+    localStorage.removeItem(LS_KEY);
+    initAdmin();
+    notify('Données réinitialisées.');
+  }
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+// Version pour les IDs HTML (retirer les caractères spéciaux)
+function esc2(str) {
+  return String(str || '').replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+// Mettre à jour les champs de paris quand on change de phase
+document.addEventListener('change', e => {
+  if (e.target && e.target.id === 'add-phase') {
+    renderMatchBetsInputs();
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+    doLogin();
+  }
+});
+</script>
+</body>
+</html>
