@@ -421,9 +421,15 @@ let BRACKETS_TOUR2 = [];
 let BRACKETS_TOUR3 = [];
 let ADMIN_RESULTS = {};
 
+let WINNER_LOCKS = { t1:false, t2:false, t3:false };
+
 function loadAdminResults() {
-  try { ADMIN_RESULTS = JSON.parse(localStorage.getItem('mk_tournament_data')||'{}')?.results || {}; }
-  catch { ADMIN_RESULTS = {}; }
+  try {
+    const stored = JSON.parse(localStorage.getItem('mk_tournament_data')||'{}');
+    ADMIN_RESULTS = stored?.results || {};
+    WINNER_LOCKS  = stored?.winnerLocks || { t1:false, t2:false, t3:false };
+  }
+  catch { ADMIN_RESULTS = {}; WINNER_LOCKS = { t1:false, t2:false, t3:false }; }
 }
 
 function isMatchPlayed(matchKey) {
@@ -474,8 +480,20 @@ function getEligibleWinnerPlayers(tabIdx, phase) {
 function fillWinnerSelect(id, tabIdx, phase) {
   const s = document.getElementById(id);
   if (!s) return;
+  const tabKey = `t${tabIdx+1}`;
+  const isLocked = !!WINNER_LOCKS[tabKey];
+
+  if (isLocked) {
+    s.innerHTML = '<option value="">— Paris clos —</option>';
+    s.disabled = true;
+    s.title = 'Paris sur le gagnant final verrouillé par l\'organisateur';
+    s.closest('.winner-card')?.style.setProperty('opacity','0.45');
+    return;
+  }
+
   const players = getEligibleWinnerPlayers(tabIdx, phase);
   s.innerHTML = '<option value="">— Choisir un joueur —</option>';
+  s.closest('.winner-card')?.style.removeProperty('opacity');
   if (players.length === 0) {
     s.disabled = true;
     s.title = 'Les joueurs ne sont pas encore déterminés';
