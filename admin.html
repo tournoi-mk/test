@@ -9,15 +9,8 @@
     :root { --red:#E8001D; --blue:#0052A5; --yellow:#FFD700; --dark:#07071a; --green:#00c97a; }
     * { margin:0; padding:0; box-sizing:border-box; }
     body { background:var(--dark); font-family:'Exo 2',sans-serif; color:#fff; min-height:100vh; }
-    .bg {
-      position:fixed; inset:0; z-index:0;
-      background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,82,165,0.18),transparent 70%),linear-gradient(180deg,#060610 0%,#0A0A1E 100%);
-    }
-    #login-screen {
-      position:fixed; inset:0; z-index:200;
-      display:flex; align-items:center; justify-content:center;
-      background:rgba(7,7,26,0.97);
-    }
+    .bg { position:fixed; inset:0; z-index:0; background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(0,82,165,0.18),transparent 70%),linear-gradient(180deg,#060610 0%,#0A0A1E 100%); }
+    #login-screen { position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center; background:rgba(7,7,26,0.97); }
     .login-box { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:40px 36px; text-align:center; width:340px; }
     .login-icon { font-size:3rem; margin-bottom:12px; }
     .login-title { font-family:'Russo One',sans-serif; font-size:1.1rem; letter-spacing:0.1em; color:var(--yellow); margin-bottom:6px; }
@@ -41,14 +34,13 @@
     .ast-blue   { color:#6eb4ff; border-left:3px solid var(--blue);   padding-left:12px; }
     .ast-yellow { color:var(--yellow); border-left:3px solid var(--yellow); padding-left:12px; }
     .ast-green  { color:#6fffbe; border-left:3px solid var(--green);  padding-left:12px; }
+    .ast-orange { color:#ffb347; border-left:3px solid #ff8c00; padding-left:12px; }
     label { display:block; font-size:0.76rem; letter-spacing:0.08em; color:rgba(255,255,255,0.45); text-transform:uppercase; margin-bottom:5px; }
     input[type=text],input[type=password],select,textarea { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#fff; font-family:'Exo 2',sans-serif; font-size:0.88rem; padding:9px 13px; outline:none; transition:border-color 0.2s; width:100%; }
     input:focus,select:focus,textarea:focus { border-color:var(--yellow); }
     select option { background:#0A0A1E; }
     textarea { resize:vertical; min-height:80px; font-size:0.8rem; font-family:monospace; line-height:1.5; }
     .field-group { margin-bottom:14px; }
-    .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
-    @media (max-width:800px) { .grid-3 { grid-template-columns:1fr; } }
     .btn { padding:10px 20px; border-radius:8px; font-family:'Russo One',sans-serif; font-size:0.8rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.2s; border:1px solid; }
     .btn-yellow { background:rgba(255,215,0,0.1); border-color:var(--yellow); color:var(--yellow); }
     .btn-yellow:hover { background:rgba(255,215,0,0.22); }
@@ -78,8 +70,8 @@
     .match-result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
     .match-result-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
     .mrc-head { display:flex; align-items:center; justify-content:space-between; padding:9px 13px; border-bottom:1px solid rgba(255,255,255,0.06); gap:8px; }
-    .mrc-head-blue   { background:rgba(0,82,165,0.22); }
-    .mrc-head-red    { background:rgba(232,0,29,0.18); }
+    .mrc-head-blue { background:rgba(0,82,165,0.22); }
+    .mrc-head-red  { background:rgba(232,0,29,0.18); }
     .mrc-head-yellow { background:rgba(255,215,0,0.12); }
     .mrc-name { font-family:'Russo One',sans-serif; font-size:0.78rem; letter-spacing:0.06em; }
     .played-badge { font-size:0.62rem; padding:2px 7px; border-radius:10px; background:rgba(0,201,122,0.15); border:1px solid rgba(0,201,122,0.35); color:#6fffbe; font-family:'Russo One',sans-serif; white-space:nowrap; }
@@ -93,11 +85,6 @@
     .save-match-btn { width:100%; padding:7px; margin-top:6px; background:rgba(0,201,122,0.1); border:1px solid rgba(0,201,122,0.35); border-radius:6px; color:#6fffbe; font-family:'Russo One',sans-serif; font-size:0.72rem; letter-spacing:0.08em; cursor:pointer; transition:background 0.15s; }
     .save-match-btn:hover { background:rgba(0,201,122,0.2); }
     .save-match-btn:disabled { opacity:0.35; cursor:not-allowed; }
-    .winner-result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-    @media (max-width:700px) { .winner-result-grid { grid-template-columns:1fr; } }
-    .winner-result-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px; }
-    .wrc-title { font-family:'Russo One',sans-serif; font-size:0.78rem; letter-spacing:0.07em; margin-bottom:10px; }
-    .wrc-t1 { color:#6eb4ff; } .wrc-t2 { color:#ff8090; } .wrc-t3 { color:var(--yellow); }
     .notif { position:fixed; bottom:24px; right:24px; z-index:500; background:#0c0d22; border:1px solid rgba(0,201,122,0.4); border-radius:10px; padding:12px 20px; color:#6fffbe; font-family:'Russo One',sans-serif; font-size:0.82rem; letter-spacing:0.06em; box-shadow:0 8px 24px rgba(0,0,0,0.4); transform:translateY(80px); opacity:0; transition:all 0.3s; pointer-events:none; max-width:420px; }
     .notif.show { transform:translateY(0); opacity:1; }
     .notif.err { border-color:rgba(232,0,29,0.45); color:#ff8090; }
@@ -111,6 +98,26 @@
     .import-preview-box { margin-top:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px; }
     .import-preview-title { font-family:'Russo One',sans-serif; font-size:0.75rem; letter-spacing:0.08em; color:rgba(255,255,255,0.45); margin-bottom:10px; text-transform:uppercase; }
     .pill { display:inline-block; padding:4px 8px; border-radius:999px; font-size:0.68rem; border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.7); margin-right:6px; margin-bottom:6px; }
+
+    /* ── TOGGLE SWITCH ── */
+    .lock-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    @media(max-width:700px) { .lock-grid { grid-template-columns:1fr; } }
+    .lock-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:18px 20px; display:flex; flex-direction:column; gap:14px; }
+    .lock-card-title { font-family:'Russo One',sans-serif; font-size:0.82rem; letter-spacing:0.08em; }
+    .lct-blue   { color:#6eb4ff; }
+    .lct-red    { color:#ff8090; }
+    .lct-yellow { color:var(--yellow); }
+    .lock-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .lock-label { font-size:0.78rem; color:rgba(255,255,255,0.55); line-height:1.4; }
+    .toggle-switch { position:relative; width:46px; height:24px; flex-shrink:0; cursor:pointer; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-track { position:absolute; inset:0; border-radius:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); transition:background 0.25s,border-color 0.25s; }
+    .toggle-switch input:checked + .toggle-track { background:rgba(232,0,29,0.35); border-color:rgba(232,0,29,0.6); }
+    .toggle-thumb { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; transition:transform 0.25s,background 0.25s; box-shadow:0 1px 4px rgba(0,0,0,0.4); }
+    .toggle-switch input:checked ~ .toggle-thumb { transform:translateX(22px); background:#ff8090; }
+    .lock-status { font-size:0.68rem; font-family:'Russo One',sans-serif; letter-spacing:0.06em; text-align:center; padding:4px 10px; border-radius:20px; }
+    .lock-status.open   { background:rgba(0,201,122,0.12); border:1px solid rgba(0,201,122,0.3); color:#6fffbe; }
+    .lock-status.closed { background:rgba(232,0,29,0.12); border:1px solid rgba(232,0,29,0.3); color:#ff8090; }
   </style>
 </head>
 <body>
@@ -138,13 +145,23 @@
     <div class="page-title">⚙️ ADMINISTRATION</div>
     <p class="page-sub">Saisie des résultats et gestion des paris</p>
 
+    <!-- ── VERROUILLAGE PARIS GAGNANTS ── -->
+    <div class="admin-section">
+      <div class="admin-section-title ast-orange">🔒 Verrouillage des paris — Gagnants finaux</div>
+      <p class="note" style="margin-bottom:18px;">Activez le verrou pour interdire les nouveaux paris sur le gagnant final d'un tableau. Les paris déjà enregistrés ne sont pas supprimés.</p>
+      <div class="lock-grid" id="lock-grid"></div>
+      <div class="btn-row">
+        <button class="btn btn-red" onclick="saveWinnerLocks()">🔒 Enregistrer les verrous</button>
+      </div>
+    </div>
+
     <!-- ── IMPORT MAIL ── -->
     <div class="admin-section">
       <div class="admin-section-title ast-green">📥 Importer un pari depuis un e-mail</div>
       <p class="import-help">
         Collez ici le contenu brut reçu par e-mail, exactement dans ce format :
         <code>PARIEUR;Nom</code>, <code>PHASE;Avant le tournoi</code>, puis les lignes de gagnants et de matchs.<br>
-        Pour une même personne, un seul pari par match par tour est accepté. Un pari partiel sur un tour (ex: seulement certains matchs du tour 2) peut être complété plus tard.
+        Pour une même personne, un seul pari par match par tour est accepté.
       </p>
       <div class="field-group">
         <label>Contenu du mail</label>
@@ -177,18 +194,14 @@ Tableau 1;Poule A;Julie;1"></textarea>
     <!-- ── VAINQUEURS RÉELS ── -->
     <div class="admin-section">
       <div class="admin-section-title ast-yellow">🏆 Vainqueurs réels des tableaux</div>
-      <p class="note" style="margin-bottom:16px;">Les vainqueurs sont déterminés automatiquement depuis le résultat du match 1 du tour 3 (joueur classé 1er). Cette section est affichée à titre indicatif.</p>
+      <p class="note" style="margin-bottom:16px;">Déterminés automatiquement depuis le résultat du match 1 du tour 3 (joueur classé 1er).</p>
       <div id="winners-display" style="display:flex;gap:16px;flex-wrap:wrap;"></div>
     </div>
 
     <!-- ── RÉSULTATS DES MATCHS ── -->
     <div class="admin-section">
       <div class="admin-section-title ast-red">🏁 Résultats des matchs</div>
-      <p class="note" style="margin-bottom:18px;">
-        Pour chaque match joué, indiquez le classement réel (1er à 4e) et cliquez "Valider". 
-        Les 4 joueurs doivent être nommés avant de pouvoir valider. 
-        Les résultats propagent automatiquement les noms dans les tours suivants.
-      </p>
+      <p class="note" style="margin-bottom:18px;">Pour chaque match joué, indiquez le classement réel (1er à 4e) et cliquez "Valider". Les 4 joueurs doivent être nommés avant de pouvoir valider.</p>
       <div id="match-results-container">
         <p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.85rem;">Chargement des matchs…</p>
       </div>
@@ -205,7 +218,7 @@ Tableau 1;Poule A;Julie;1"></textarea>
     <!-- ── SAUVEGARDE ── -->
     <div class="admin-section">
       <div class="admin-section-title ast-blue">💾 Sauvegarde & Export</div>
-      <p class="note" style="margin-bottom:14px;">Les données sont stockées dans le localStorage de ce navigateur. Exportez-les en JSON pour les sauvegarder ou les partager entre appareils.</p>
+      <p class="note" style="margin-bottom:14px;">Les données sont stockées dans le localStorage. Exportez-les en JSON pour les sauvegarder ou les partager entre appareils.</p>
       <div class="btn-row">
         <button class="btn btn-blue" onclick="exportData()">📤 Exporter JSON</button>
         <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">📥 Importer JSON</button>
@@ -225,11 +238,6 @@ Tableau 1;Poule A;Julie;1"></textarea>
 const ADMIN_PASSWORD = "mariokart2025";
 const LS_KEY = 'mk_tournament_data';
 
-/* ════════════════════════════════════════════════════════════
-   BRACKETS (même structure que tableaux.html)
-   Utilisé pour construire les MATCH_DEFS dynamiquement avec
-   propagation des résultats.
-════════════════════════════════════════════════════════════ */
 const BRACKETS_BASE = [
   {
     tableNumber:1, tableTitle:"Tableau 1",
@@ -296,78 +304,45 @@ const BRACKETS_BASE = [
   }
 ];
 
-/* ════════════════════════════════════════════════════════════
-   PROPAGATION — même logique que tableaux.html
-   Retourne un BRACKETS enrichi avec les vrais noms dans players
-════════════════════════════════════════════════════════════ */
 function buildEnrichedBrackets(results) {
-  // Deep copy
   const brackets = JSON.parse(JSON.stringify(BRACKETS_BASE));
-
   brackets.forEach(br => {
     const tab = br.tableNumber;
-
     function getPlayerByRank(gi, rank) {
       const key = `t${tab}_tour1_g${gi}`;
       const res = results[key];
       if (!res || !res.played || !res.ranks) return null;
       return br.groups[gi].players.find(p => String(res.ranks[p]) === String(rank)) || null;
     }
-
-    const t2Mapping = [
-      [[0,1],[1,2],[2,1],[3,2]],
-      [[0,2],[1,1],[2,2],[3,1]],
-      [[0,3],[1,4],[2,3],[3,4]],
-      [[0,4],[1,3],[2,4],[3,3]]
-    ];
+    const t2Mapping = [[[0,1],[1,2],[2,1],[3,2]],[[0,2],[1,1],[2,2],[3,1]],[[0,3],[1,4],[2,3],[3,4]],[[0,4],[1,3],[2,4],[3,3]]];
     t2Mapping.forEach((slotMap, mi) => {
-      slotMap.forEach(([gi, rank], si) => {
-        br.tour2Matches[mi].players = br.tour2Matches[mi].players || ["-","-","-","-"];
-        br.tour2Matches[mi].players[si] = getPlayerByRank(gi, rank) || "-";
-      });
+      br.tour2Matches[mi].players = br.tour2Matches[mi].players || ["-","-","-","-"];
+      slotMap.forEach(([gi, rank], si) => { br.tour2Matches[mi].players[si] = getPlayerByRank(gi, rank) || "-"; });
     });
-
     function getT2PlayerByRank(matchIdx, rank) {
       const key = `t${tab}_tour2_m${matchIdx}`;
       const res = results[key];
       if (!res || !res.played || !res.ranks) return null;
-      const players = br.tour2Matches[matchIdx].players;
-      return players.find(p => p !== '-' && String(res.ranks[p]) === String(rank)) || null;
+      return br.tour2Matches[matchIdx].players.find(p => p !== '-' && String(res.ranks[p]) === String(rank)) || null;
     }
-
-    const t3Mapping = [
-      [[0,1],[0,2],[1,1],[1,2]],
-      [[0,3],[0,4],[1,3],[1,4]],
-      [[2,1],[2,2],[3,1],[3,2]],
-      [[2,3],[2,4],[3,3],[3,4]]
-    ];
+    const t3Mapping = [[[0,1],[0,2],[1,1],[1,2]],[[0,3],[0,4],[1,3],[1,4]],[[2,1],[2,2],[3,1],[3,2]],[[2,3],[2,4],[3,3],[3,4]]];
     t3Mapping.forEach((slotMap, mi) => {
-      slotMap.forEach(([t2mi, rank], si) => {
-        br.tour3Matches[mi].players = br.tour3Matches[mi].players || ["-","-","-","-"];
-        br.tour3Matches[mi].players[si] = getT2PlayerByRank(t2mi, rank) || "-";
-      });
+      br.tour3Matches[mi].players = br.tour3Matches[mi].players || ["-","-","-","-"];
+      slotMap.forEach(([t2mi, rank], si) => { br.tour3Matches[mi].players[si] = getT2PlayerByRank(t2mi, rank) || "-"; });
     });
   });
-
   return brackets;
 }
 
-/* Construit MATCH_DEFS avec les noms propagés */
 function buildMatchDefs(results) {
   const enriched = buildEnrichedBrackets(results);
   const defs = [];
   enriched.forEach(br => {
     const tab = br.tableNumber;
     const color = tab===1?'blue':tab===2?'red':'yellow';
-    br.groups.forEach((g, gi) => {
-      defs.push({ key:`t${tab}_tour1_g${gi}`, tour:1, tableau:tab, label:`Tableau ${tab}`, name:g.groupName, tag:'', color, players:[...g.players] });
-    });
-    br.tour2Matches.forEach((m, mi) => {
-      defs.push({ key:`t${tab}_tour2_m${mi}`, tour:2, tableau:tab, label:`Tableau ${tab}`, name:m.matchName, tag:m.matchTag, color, players:[...(m.players||["-","-","-","-"])], slots:m.slots });
-    });
-    br.tour3Matches.forEach((m, mi) => {
-      defs.push({ key:`t${tab}_tour3_m${mi}`, tour:3, tableau:tab, label:`Tableau ${tab}`, name:m.matchName, tag:m.matchTag, color, players:[...(m.players||["-","-","-","-"])], slots:m.slots });
-    });
+    br.groups.forEach((g, gi) => defs.push({ key:`t${tab}_tour1_g${gi}`, tour:1, tableau:tab, label:`Tableau ${tab}`, name:g.groupName, tag:'', color, players:[...g.players] }));
+    br.tour2Matches.forEach((m, mi) => defs.push({ key:`t${tab}_tour2_m${mi}`, tour:2, tableau:tab, label:`Tableau ${tab}`, name:m.matchName, tag:m.matchTag, color, players:[...(m.players||["-","-","-","-"])], slots:m.slots }));
+    br.tour3Matches.forEach((m, mi) => defs.push({ key:`t${tab}_tour3_m${mi}`, tour:3, tableau:tab, label:`Tableau ${tab}`, name:m.matchName, tag:m.matchTag, color, players:[...(m.players||["-","-","-","-"])], slots:m.slots }));
   });
   return defs;
 }
@@ -388,11 +363,14 @@ function doLogin() {
   }
 }
 
-function getEmptyData() { return { bettors:[], results:{}, lastUpdate:null }; }
+function getEmptyData() { return { bettors:[], results:{}, winnerLocks:{ t1:false, t2:false, t3:false }, lastUpdate:null }; }
 
 function getData() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null') || getEmptyData(); }
-  catch { return getEmptyData(); }
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_KEY) || 'null') || getEmptyData();
+    if (!d.winnerLocks) d.winnerLocks = { t1:false, t2:false, t3:false };
+    return d;
+  } catch { return getEmptyData(); }
 }
 
 function saveData(data) {
@@ -418,10 +396,67 @@ function notify(msg, isError=false) {
 
 function initAdmin() {
   const data = getData();
+  renderLockGrid(data);
   loadWinnerFields(data);
   renderMatchResults(data);
   renderBettorsList(data);
   updateRawPreview(data);
+}
+
+/* ════════════════════════════════════════════════════════════
+   VERROUILLAGE GAGNANTS FINAUX
+════════════════════════════════════════════════════════════ */
+function renderLockGrid(data) {
+  const locks = data.winnerLocks || { t1:false, t2:false, t3:false };
+  const tabs = [
+    { key:'t1', label:'Tableau 1', colorCls:'lct-blue',   desc:'1er au classement général' },
+    { key:'t2', label:'Tableau 2', colorCls:'lct-red',    desc:'17e au classement général' },
+    { key:'t3', label:'Tableau 3', colorCls:'lct-yellow', desc:'33e au classement général' }
+  ];
+  const wrap = document.getElementById('lock-grid');
+  wrap.innerHTML = tabs.map(tab => {
+    const locked = !!locks[tab.key];
+    return `
+      <div class="lock-card">
+        <div class="lock-card-title ${tab.colorCls}">🏆 ${tab.label}</div>
+        <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);">${tab.desc}</div>
+        <div class="lock-row">
+          <div class="lock-label">${locked ? '🔒 Paris gagnant <strong>verrouillé</strong>' : '🟢 Paris gagnant <strong>ouvert</strong>'}</div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lock-${tab.key}" ${locked ? 'checked' : ''} onchange="previewLock('${tab.key}', this.checked)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </div>
+        <div class="lock-status ${locked ? 'closed' : 'open'}" id="lock-status-${tab.key}">
+          ${locked ? '🔒 VERROUILLÉ' : '✅ OUVERT'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function previewLock(tabKey, isLocked) {
+  const statusEl = document.getElementById(`lock-status-${tabKey}`);
+  const cardEl = statusEl?.closest('.lock-card');
+  const labelEl = cardEl?.querySelector('.lock-label');
+  if (statusEl) {
+    statusEl.className = `lock-status ${isLocked ? 'closed' : 'open'}`;
+    statusEl.textContent = isLocked ? '🔒 VERROUILLÉ' : '✅ OUVERT';
+  }
+  if (labelEl) {
+    labelEl.innerHTML = isLocked ? '🔒 Paris gagnant <strong>verrouillé</strong>' : '🟢 Paris gagnant <strong>ouvert</strong>';
+  }
+}
+
+function saveWinnerLocks() {
+  const data = getData();
+  if (!data.winnerLocks) data.winnerLocks = {};
+  ['t1','t2','t3'].forEach(t => {
+    const el = document.getElementById(`lock-${t}`);
+    data.winnerLocks[t] = el ? el.checked : false;
+  });
+  saveData(data);
+  notify('✅ Verrous enregistrés !');
 }
 
 function loadWinnerFields(data) {
@@ -433,94 +468,62 @@ function loadWinnerFields(data) {
     const w = getActualWinner(tabNum, results);
     return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;min-width:180px;">
       <div style="font-family:'Russo One',sans-serif;font-size:0.78rem;color:${colors[i]};margin-bottom:8px;">Tableau ${tabNum}</div>
-      <div style="font-size:0.9rem;font-weight:600;color:${w ? '#fff' : 'rgba(255,255,255,0.25)'};">${w ? '🏆 ' + esc(w) : '— pas encore joué'}</div>
+      <div style="font-size:0.9rem;font-weight:600;color:${w ? '#fff' : 'rgba(255,255,255,0.25)'};">${w ? '🏆 '+esc(w) : '— pas encore joué'}</div>
     </div>`;
   }).join('');
 }
 
-function saveWinners() {
-  const data = getData();
-  if (!data.results) data.results = {};
-  ['t1','t2','t3'].forEach(t => {
-    const v = (document.getElementById(`real-winner-${t}`)?.value || '').trim();
-    data.results[`winner_${t}`] = v || null;
-  });
-  saveData(data);
-  notify('✅ Vainqueurs enregistrés !');
-}
-
-/* ════════════════════════════════════════════════════════════
-   RENDU DES MATCHS AVEC PROPAGATION
-════════════════════════════════════════════════════════════ */
 function renderMatchResults(data) {
   const container = document.getElementById('match-results-container');
   if (!container) return;
-
   const results = data.results || {};
   const MATCH_DEFS = buildMatchDefs(results);
-
   const tourLabels = { 1:'🏁 Tour 1 — Poules', 2:'🔀 Tour 2', 3:'🏆 Tour 3 — Classement final' };
   let html = '';
-
-  [1, 2, 3].forEach(tour => {
+  [1,2,3].forEach(tour => {
     const tourMatches = MATCH_DEFS.filter(d => d.tour === tour);
     if (!tourMatches.length) return;
-
     html += `<div class="match-result-section"><h3>${tourLabels[tour]}</h3><div class="match-result-grid">`;
-
     tourMatches.forEach(match => {
       const res = results[match.key] || {};
       const isPlayed = !!res.played;
       const ranks = res.ranks || {};
-
-      // Vérifie si les 4 joueurs sont définis (non "-")
       const realPlayers = match.players.filter(p => p && p !== '-');
       const allDefined = realPlayers.length === 4;
-
       const playerRows = match.players.map(p => {
         const tbd = !p || p === '-';
         const currentRank = tbd ? '' : (ranks[p] || '');
-        return `
-          <div class="mrc-player-row">
-            <span class="mrc-player-name${tbd?' tbd':''}">${tbd ? (match.slots ? match.slots[match.players.indexOf(p)] || 'À définir' : 'À définir') : esc(p)}</span>
-            ${tbd ? '<span style="width:90px;display:inline-block"></span>' : `
-              <select class="mrc-rank-select" id="rank-${match.key}-${encodeForId(p)}" ${isPlayed?'disabled':''}>
-                <option value="">—</option>
-                <option value="1" ${currentRank==='1'?'selected':''}>🥇 1er</option>
-                <option value="2" ${currentRank==='2'?'selected':''}>🥈 2e</option>
-                <option value="3" ${currentRank==='3'?'selected':''}>🥉 3e</option>
-                <option value="4" ${currentRank==='4'?'selected':''}>🍌 4e</option>
-              </select>`}
-          </div>`;
-      }).join('');
-
-      const btnDisabled = !allDefined && !isPlayed;
-      const btnTitle = btnDisabled ? 'Les 4 joueurs doivent être définis avant de valider' : '';
-
-      html += `
-        <div class="match-result-card">
-          <div class="mrc-head mrc-head-${match.color}">
-            <span class="mrc-name">T${match.tableau} · ${esc(match.name)}</span>
-            <span class="${isPlayed?'played-badge':'unplayed-badge'}">${isPlayed?'✓ Joué':'— En attente'}</span>
-          </div>
-          <div class="mrc-body">
-            ${playerRows}
-            <div style="display:flex;gap:6px;margin-top:8px;">
-              <button class="save-match-btn" 
-                onclick="saveMatchResult('${match.key}')"
-                ${btnDisabled ? 'disabled title="'+btnTitle+'"' : ''}
-                ${isPlayed ? 'style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)"' : ''}>
-                ${isPlayed ? '🔄 Modifier le résultat' : (btnDisabled ? '⏳ Joueurs manquants' : '✅ Valider ce match')}
-              </button>
-              ${isPlayed ? `<button class="save-match-btn" style="background:rgba(232,0,29,0.08);border-color:rgba(232,0,29,0.3);color:#ff8090;width:auto;padding:7px 12px;" onclick="unplayMatch('${match.key}')">✕</button>` : ''}
-            </div>
-          </div>
+        return `<div class="mrc-player-row">
+          <span class="mrc-player-name${tbd?' tbd':''}">${tbd ? (match.slots ? match.slots[match.players.indexOf(p)] || 'À définir' : 'À définir') : esc(p)}</span>
+          ${tbd ? '<span style="width:90px;display:inline-block"></span>' : `
+            <select class="mrc-rank-select" id="rank-${match.key}-${encodeForId(p)}" ${isPlayed?'disabled':''}>
+              <option value="">—</option>
+              <option value="1" ${currentRank==='1'?'selected':''}>🥇 1er</option>
+              <option value="2" ${currentRank==='2'?'selected':''}>🥈 2e</option>
+              <option value="3" ${currentRank==='3'?'selected':''}>🥉 3e</option>
+              <option value="4" ${currentRank==='4'?'selected':''}>🍌 4e</option>
+            </select>`}
         </div>`;
+      }).join('');
+      const btnDisabled = !allDefined && !isPlayed;
+      html += `<div class="match-result-card">
+        <div class="mrc-head mrc-head-${match.color}">
+          <span class="mrc-name">T${match.tableau} · ${esc(match.name)}</span>
+          <span class="${isPlayed?'played-badge':'unplayed-badge'}">${isPlayed?'✓ Joué':'— En attente'}</span>
+        </div>
+        <div class="mrc-body">
+          ${playerRows}
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <button class="save-match-btn" onclick="saveMatchResult('${match.key}')" ${btnDisabled?'disabled title="Les 4 joueurs doivent être définis avant de valider"':''} ${isPlayed?'style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)"':''}>
+              ${isPlayed ? '🔄 Modifier le résultat' : (btnDisabled ? '⏳ Joueurs manquants' : '✅ Valider ce match')}
+            </button>
+            ${isPlayed ? `<button class="save-match-btn" style="background:rgba(232,0,29,0.08);border-color:rgba(232,0,29,0.3);color:#ff8090;width:auto;padding:7px 12px;" onclick="unplayMatch('${match.key}')">✕</button>` : ''}
+          </div>
+        </div>
+      </div>`;
     });
-
     html += `</div></div>`;
   });
-
   container.innerHTML = html;
 }
 
@@ -529,28 +532,19 @@ function saveMatchResult(matchKey) {
   const results = data.results || {};
   const MATCH_DEFS = buildMatchDefs(results);
   const match = MATCH_DEFS.find(m => m.key === matchKey);
-
   if (!match) { notify('❌ Match introuvable.', true); return; }
-
   const realPlayers = match.players.filter(p => p && p !== '-');
-  if (realPlayers.length < 4) {
-    notify('❌ Les 4 joueurs doivent être définis avant de valider ce match.', true);
-    return;
-  }
-
+  if (realPlayers.length < 4) { notify('❌ Les 4 joueurs doivent être définis avant de valider ce match.', true); return; }
   const ranks = {};
   const chosen = [];
-
   for (const p of realPlayers) {
     const sel = document.getElementById(`rank-${match.key}-${encodeForId(p)}`);
     const v = sel ? sel.value : '';
     if (v) {
       if (chosen.includes(v)) { notify('❌ Deux joueurs ne peuvent pas avoir le même rang !', true); return; }
-      chosen.push(v);
-      ranks[p] = v;
+      chosen.push(v); ranks[p] = v;
     }
   }
-
   if (!data.results) data.results = {};
   data.results[matchKey] = { played:true, ranks };
   saveData(data);
@@ -571,43 +565,25 @@ function unplayMatch(matchKey) {
   notify('Résultat annulé.');
 }
 
-/* ════════════════════════════════════════════════════════════
-   LISTE DES PARIEURS
-════════════════════════════════════════════════════════════ */
 function renderBettorsList(data) {
   const wrap = document.getElementById('bettors-list-wrap');
   const bettors = data.bettors || [];
-  if (bettors.length === 0) {
-    wrap.innerHTML = '<p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.85rem;">Aucun parieur enregistré.</p>';
-    return;
-  }
+  if (bettors.length === 0) { wrap.innerHTML = '<p style="color:rgba(255,255,255,0.25);font-style:italic;font-size:0.85rem;">Aucun parieur enregistré.</p>'; return; }
   const results = data.results || {};
   const rows = bettors.map(b => {
     const score = computeScore(b, results);
-    const phaseBadges = (b.phases||[]).map(p => {
-      const labels={p0:'Avant',p1:'T1',p2:'T2'};
-      return `<span class="phase-tag pt-${p}">${labels[p]||p}</span>`;
-    }).join('');
-    const winners = ['p0','p1','p2'].map(ph => {
-      const wb = b[`winnerBets_${ph}`]||{};
-      const parts = ['t1','t2','t3'].filter(t=>wb[t]).map(t=>`T${t.slice(1)}:${esc(wb[t])}`);
-      return parts.length ? `<span style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-right:6px;">[${ph}] ${parts.join(' · ')}</span>` : '';
-    }).join('');
-    const matchBetCount = Object.keys(b.bets||{}).length;
+    const phaseBadges = (b.phases||[]).map(p => { const labels={p0:'Avant',p1:'T1',p2:'T2'}; return `<span class="phase-tag pt-${p}">${labels[p]||p}</span>`; }).join('');
+    const winners = ['p0','p1','p2'].map(ph => { const wb=b[`winnerBets_${ph}`]||{}; const parts=['t1','t2','t3'].filter(t=>wb[t]).map(t=>`T${t.slice(1)}:${esc(wb[t])}`); return parts.length ? `<span style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-right:6px;">[${ph}] ${parts.join(' · ')}</span>` : ''; }).join('');
     return `<tr>
       <td class="bettor-name-cell">${esc(b.name)}</td>
       <td>${phaseBadges}</td>
       <td>${winners||'<span style="color:rgba(255,255,255,0.2);font-size:0.72rem">—</span>'}</td>
-      <td style="text-align:right;font-size:0.8rem;color:rgba(255,255,255,0.4)">${matchBetCount} matchs pariés</td>
+      <td style="text-align:right;font-size:0.8rem;color:rgba(255,255,255,0.4)">${Object.keys(b.bets||{}).length} matchs pariés</td>
       <td style="text-align:right;font-family:'Russo One',sans-serif;color:#8ec1ff">${score.total} pts</td>
       <td><button class="del-btn" onclick="deleteBettor('${escJs(b.name)}')">✕</button></td>
     </tr>`;
   }).join('');
-  wrap.innerHTML = `
-    <table class="bettor-table">
-      <thead><tr><th>Nom</th><th>Phases</th><th>Vainqueurs prédits</th><th style="text-align:right">Paris matchs</th><th style="text-align:right">Score actuel</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  wrap.innerHTML = `<table class="bettor-table"><thead><tr><th>Nom</th><th>Phases</th><th>Vainqueurs prédits</th><th style="text-align:right">Paris matchs</th><th style="text-align:right">Score actuel</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function deleteBettor(name) {
@@ -619,10 +595,6 @@ function deleteBettor(name) {
   notify(`🗑 ${name} supprimé(e).`);
 }
 
-/* ════════════════════════════════════════════════════════════
-   CALCUL DES SCORES
-════════════════════════════════════════════════════════════ */
-/* Retourne le vainqueur réel d'un tableau = joueur classé 1er du match 1 du tour 3 */
 function getActualWinner(tabNumber, results) {
   const key = `t${tabNumber}_tour3_m0`;
   const res = results[key];
@@ -640,34 +612,18 @@ function computeScore(bettor, results) {
       if (res.ranks && res.ranks[player] && String(res.ranks[player])===String(predictedRank)) matchPts++;
     }
   }
-  [1, 2, 3].forEach(tabNum => {
-    const tab = `t${tabNum}`;
+  [1,2,3].forEach(tabNum => {
     const actual = getActualWinner(tabNum, results);
     if (!actual) return;
-    const p0 = (bettor.winnerBets_p0||{})[tab];
+    const p0 = (bettor.winnerBets_p0||{})[`t${tabNum}`];
     if (p0 && p0 === actual) winnerPts += 20;
   });
   return { total:matchPts+winnerPts, matchPts, winnerPts };
 }
 
-/* ════════════════════════════════════════════════════════════
-   IMPORT MAIL
-   - Anti-doublon par match (même match même tour → refus)
-   - Deux imports partiels du même tour autorisés (matchs différents)
-   - Règles vainqueurs après tour 1 : seulement joueurs matchs 1+2 T2
-   - Règles vainqueurs après tour 2 : seulement joueurs match 1 T3
-════════════════════════════════════════════════════════════ */
-function clearMailImport() {
-  const ta = document.getElementById('mail-import-text');
-  if (ta) ta.value = '';
-}
-
-function createEmptyBettor(name) {
-  return { name, phases:[], bets:{}, winnerBets_p0:{}, winnerBets_p1:{}, winnerBets_p2:{} };
-}
-
+function clearMailImport() { const ta=document.getElementById('mail-import-text'); if(ta) ta.value=''; }
+function createEmptyBettor(name) { return { name, phases:[], bets:{}, winnerBets_p0:{}, winnerBets_p1:{}, winnerBets_p2:{} }; }
 function normalizeName(str) { return String(str||'').trim().toLowerCase(); }
-
 function parsePhaseLabelToCode(label) {
   const raw = String(label||'').trim().toLowerCase();
   if (raw==='avant le tournoi') return 'p0';
@@ -675,7 +631,6 @@ function parsePhaseLabelToCode(label) {
   if (raw==='après tour 2'||raw==='apres tour 2') return 'p2';
   return null;
 }
-
 function getTourFromPhase(phase) { return {p0:1,p1:2,p2:3}[phase]||1; }
 
 function parseEmailBetText(rawText) {
@@ -689,20 +644,17 @@ function parseEmailBetText(rawText) {
   const phase = parsePhaseLabelToCode(phaseLabel);
   if (!bettorName) throw new Error('Nom du parieur vide.');
   if (!phase) throw new Error('Phase non reconnue : '+phaseLabel);
-
   const winnerBets = {};
   const rows = [];
   let inWinners=false, inMatches=false;
-
   for (const line of lines) {
-    if (line.startsWith('=== GAGNANTS FINAUX'))    { inWinners=true;  inMatches=false; continue; }
+    if (line.startsWith('=== GAGNANTS FINAUX'))     { inWinners=true;  inMatches=false; continue; }
     if (line.startsWith('=== PARIS SUR LES MATCHS')){ inWinners=false; inMatches=true;  continue; }
     if (inWinners) {
       if (/^Tableau;Vainqueur prédit$/i.test(line)) continue;
       const parts = line.split(';');
       if (parts.length>=2 && /^Tableau\s+[123]/i.test(parts[0])) {
-        const tc = parts[0].trim();
-        const wn = parts.slice(1).join(';').trim();
+        const tc=parts[0].trim(), wn=parts.slice(1).join(';').trim();
         if (/^Tableau\s+1/i.test(tc)) winnerBets.t1=wn;
         if (/^Tableau\s+2/i.test(tc)) winnerBets.t2=wn;
         if (/^Tableau\s+3/i.test(tc)) winnerBets.t3=wn;
@@ -711,9 +663,7 @@ function parseEmailBetText(rawText) {
     if (inMatches) {
       if (/^Tableau;Match;Joueur;Rang prédit$/i.test(line)) continue;
       const parts = line.split(';');
-      if (parts.length>=4) {
-        rows.push({ tableauLabel:parts[0].trim(), matchName:parts[1].trim(), player:parts[2].trim(), rank:parts[3].trim() });
-      }
+      if (parts.length>=4) rows.push({ tableauLabel:parts[0].trim(), matchName:parts[1].trim(), player:parts[2].trim(), rank:parts[3].trim() });
     }
   }
   return { bettorName, phase, phaseLabel, winnerBets, rows };
@@ -723,60 +673,34 @@ function findMatchKeyFromImportedRow(phase, tableauLabel, matchName, playerName,
   const tour = getTourFromPhase(phase);
   const tabNumMatch = String(tableauLabel).match(/Tableau\s+(\d+)/i);
   const tabNum = tabNumMatch ? Number(tabNumMatch[1]) : null;
-  let candidates = MATCH_DEFS.filter(m =>
-    m.tour===tour && (!tabNum || m.tableau===tabNum) && normalizeName(m.name)===normalizeName(matchName)
-  );
-  if (playerName) {
-    const wp = candidates.filter(m=>(m.players||[]).some(p=>normalizeName(p)===normalizeName(playerName)));
-    if (wp.length>=1) return wp[0].key;
-  }
+  let candidates = MATCH_DEFS.filter(m => m.tour===tour && (!tabNum||m.tableau===tabNum) && normalizeName(m.name)===normalizeName(matchName));
+  if (playerName) { const wp=candidates.filter(m=>(m.players||[]).some(p=>normalizeName(p)===normalizeName(playerName))); if(wp.length>=1) return wp[0].key; }
   return candidates.length>=1 ? candidates[0].key : null;
 }
 
-/* Retourne les joueurs éligibles au pari vainqueur selon la phase */
 function getEligibleWinnerPlayers(tabIdx, phase, results) {
-  const tab = tabIdx + 1;
-  const enriched = buildEnrichedBrackets(results);
-  const br = enriched[tabIdx];
-
-  if (phase === 'p1') {
-    // Après tour 1 : seulement joueurs matchs 1 et 2 du tour 2
-    const eligible = new Set();
-    [0,1].forEach(mi => {
-      (br.tour2Matches[mi].players||[]).forEach(p => { if(p && p!=='-') eligible.add(p); });
-    });
-    return [...eligible];
-  }
-  if (phase === 'p2') {
-    // Après tour 2 : seulement joueurs match 1 du tour 3
-    const eligible = new Set();
-    (br.tour3Matches[0].players||[]).forEach(p => { if(p && p!=='-') eligible.add(p); });
-    return [...eligible];
-  }
-  // p0 : tous les joueurs du tableau
-  return br.groups.flatMap(g => g.players);
+  const br = buildEnrichedBrackets(results)[tabIdx];
+  if (phase==='p1') { const e=new Set(); [0,1].forEach(mi=>(br.tour2Matches[mi].players||[]).forEach(p=>{if(p&&p!=='-')e.add(p);})); return [...e]; }
+  if (phase==='p2') { const e=new Set(); (br.tour3Matches[0].players||[]).forEach(p=>{if(p&&p!=='-')e.add(p);}); return [...e]; }
+  return br.groups.flatMap(g=>g.players);
 }
 
 function importBetFromEmail() {
   const raw = (document.getElementById('mail-import-text')?.value||'').trim();
   if (!raw) { notify('❌ Collez le contenu du mail.', true); return; }
-
   let parsed;
-  try { parsed = parseEmailBetText(raw); }
-  catch(e) { notify('❌ '+e.message, true); return; }
-
+  try { parsed = parseEmailBetText(raw); } catch(e) { notify('❌ '+e.message, true); return; }
   const data = getData();
   const results = data.results || {};
+  const locks = data.winnerLocks || {};
   const MATCH_DEFS = buildMatchDefs(results);
   const { bettorName, phase, winnerBets, rows } = parsed;
 
   let bettor = data.bettors.find(b => normalizeName(b.name)===normalizeName(bettorName));
   if (!bettor) { bettor = createEmptyBettor(bettorName); data.bettors.push(bettor); }
 
-  /* ── Grouper les lignes par matchKey ── */
   const groupedByMatch = {};
   const unresolved = [];
-
   rows.forEach(r => {
     const key = findMatchKeyFromImportedRow(phase, r.tableauLabel, r.matchName, r.player, MATCH_DEFS);
     if (!key) { unresolved.push(`${r.tableauLabel} / ${r.matchName} / ${r.player}`); return; }
@@ -784,88 +708,56 @@ function importBetFromEmail() {
     groupedByMatch[key][r.player] = r.rank;
   });
 
-  /* ── Anti-doublon : vérifier que ce match n'est pas déjà parié sur ce tour ── */
   const duplicateMatches = [];
   Object.keys(groupedByMatch).forEach(key => {
     if (bettor.bets[key] && Object.keys(bettor.bets[key]).length > 0) {
-      // Vérifie si les joueurs importés chevauchent les joueurs déjà pariés
-      const existingPlayers = Object.keys(bettor.bets[key]);
-      const newPlayers = Object.keys(groupedByMatch[key]);
-      const overlap = newPlayers.some(p => existingPlayers.includes(p));
+      const overlap = Object.keys(groupedByMatch[key]).some(p => Object.keys(bettor.bets[key]).includes(p));
       if (overlap) duplicateMatches.push(key);
     }
   });
-
   if (duplicateMatches.length > 0) {
-    const names = duplicateMatches.map(k => {
-      const m = MATCH_DEFS.find(x=>x.key===k);
-      return m ? `${m.label} / ${m.name}` : k;
-    }).join(', ');
+    const names = duplicateMatches.map(k => { const m=MATCH_DEFS.find(x=>x.key===k); return m?`${m.label} / ${m.name}`:k; }).join(', ');
     notify(`❌ Doublon détecté pour ${bettorName} sur : ${names}. Paris existant conservé.`, true);
     return;
   }
 
-  /* ── Appliquer les paris matchs ── */
-  Object.entries(groupedByMatch).forEach(([key, bet]) => {
-    if (!bettor.bets[key]) bettor.bets[key] = {};
-    Object.assign(bettor.bets[key], bet);
-  });
+  Object.entries(groupedByMatch).forEach(([key, bet]) => { if(!bettor.bets[key]) bettor.bets[key]={}; Object.assign(bettor.bets[key], bet); });
 
-  /* ── Vainqueurs finaux ── */
   bettor[`winnerBets_${phase}`] = bettor[`winnerBets_${phase}`] || {};
-
   ['t1','t2','t3'].forEach((tab, ti) => {
     const newPick = winnerBets[tab];
     if (!newPick) return;
 
+    // Vérifier le verrou
+    if (locks[tab]) {
+      notify(`⚠️ Paris sur le gagnant du Tableau ${ti+1} ignoré : cette option est verrouillée par l'admin.`, true);
+      return;
+    }
+
     const eligible = getEligibleWinnerPlayers(ti, phase, results);
-
-    // Vérifie si le joueur est éligible (pour p1 et p2)
     if ((phase==='p1'||phase==='p2') && eligible.length>0 && !eligible.includes(newPick)) {
-      notify(`⚠️ ${newPick} n'est plus éligible comme vainqueur du Tableau ${ti+1} pour la phase ${phase}.`, true);
+      notify(`⚠️ ${newPick} n'est plus éligible comme vainqueur du Tableau ${ti+1}.`, true);
       return;
     }
-
-    // Pour p1/p2 : si un pari antérieur existe toujours éligible, on ne l'écrase pas
     const existingP0 = (bettor.winnerBets_p0||{})[tab];
-    if (phase==='p1' && existingP0 && eligible.includes(existingP0)) {
-      // Le joueur parié en p0 est toujours en lice → pas de nouveau pari p1
-      notify(`ℹ️ Le joueur parié avant tournoi pour T${ti+1} (${existingP0}) est toujours éligible. Pari p1 non enregistré pour ce tableau.`, false);
-      return;
-    }
-
+    if (phase==='p1' && existingP0 && eligible.includes(existingP0)) { notify(`ℹ️ Pari p1 T${ti+1} ignoré : ${existingP0} (p0) est toujours éligible.`); return; }
     const existingP1 = (bettor.winnerBets_p1||{})[tab];
-    if (phase==='p2' && existingP1 && eligible.includes(existingP1)) {
-      notify(`ℹ️ Le joueur parié après T1 pour T${ti+1} (${existingP1}) est toujours éligible. Pari p2 non enregistré pour ce tableau.`, false);
-      return;
-    }
+    if (phase==='p2' && existingP1 && eligible.includes(existingP1)) { notify(`ℹ️ Pari p2 T${ti+1} ignoré : ${existingP1} (p1) est toujours éligible.`); return; }
     const existingP0b = (bettor.winnerBets_p0||{})[tab];
-    if (phase==='p2' && existingP0b && eligible.includes(existingP0b)) {
-      notify(`ℹ️ Le joueur parié avant tournoi pour T${ti+1} (${existingP0b}) est toujours éligible. Pari p2 non enregistré pour ce tableau.`, false);
-      return;
-    }
+    if (phase==='p2' && existingP0b && eligible.includes(existingP0b)) { notify(`ℹ️ Pari p2 T${ti+1} ignoré : ${existingP0b} (p0) est toujours éligible.`); return; }
 
     bettor[`winnerBets_${phase}`][tab] = newPick;
   });
 
-  /* ── Phase tracking ── */
   if (!bettor.phases.includes(phase)) bettor.phases.push(phase);
-
   saveData(data);
   renderBettorsList(data);
   updateRawPreview(data);
-
-  if (unresolved.length>0) {
-    notify(`⚠️ Import partiel : ${bettorName} importé, ${unresolved.length} ligne(s) non résolue(s).`, true);
-  } else {
-    notify(`✅ Pari importé pour ${bettorName} (${phase}) !`);
-  }
+  if (unresolved.length>0) notify(`⚠️ Import partiel : ${bettorName} importé, ${unresolved.length} ligne(s) non résolue(s).`, true);
+  else notify(`✅ Pari importé pour ${bettorName} (${phase}) !`);
   clearMailImport();
 }
 
-/* ════════════════════════════════════════════════════════════
-   SAUVEGARDE / EXPORT / RESET
-════════════════════════════════════════════════════════════ */
 function exportData() {
   const data = getData();
   const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -883,6 +775,7 @@ function importData(input) {
     try {
       const data = JSON.parse(e.target.result);
       if (!data.bettors||!data.results) throw new Error('Format invalide');
+      if (!data.winnerLocks) data.winnerLocks = { t1:false, t2:false, t3:false };
       localStorage.setItem(LS_KEY, JSON.stringify(data));
       initAdmin();
       notify('✅ Données importées !');
@@ -899,18 +792,9 @@ function confirmClearData() {
   notify('Données réinitialisées.');
 }
 
-/* ════════════════════════════════════════════════════════════
-   UTILITAIRES
-════════════════════════════════════════════════════════════ */
-function esc(str) {
-  return String(str||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
-}
-function escJs(str) {
-  return String(str||'').replaceAll('\\','\\\\').replaceAll("'","\\'");
-}
-function encodeForId(str) {
-  return btoa(unescape(encodeURIComponent(String(str)))).replaceAll('=','').replaceAll('+','-').replaceAll('/','_');
-}
+function esc(str) { return String(str||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
+function escJs(str) { return String(str||'').replaceAll('\\','\\\\').replaceAll("'","\\'"); }
+function encodeForId(str) { return btoa(unescape(encodeURIComponent(String(str)))).replaceAll('=','').replaceAll('+','-').replaceAll('/','_'); }
 </script>
 </body>
 </html>
