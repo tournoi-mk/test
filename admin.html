@@ -177,24 +177,8 @@ Tableau 1;Poule A;Julie;1"></textarea>
     <!-- ── VAINQUEURS RÉELS ── -->
     <div class="admin-section">
       <div class="admin-section-title ast-yellow">🏆 Vainqueurs réels des tableaux</div>
-      <p class="note" style="margin-bottom:16px;">Renseignez le vainqueur réel de chaque tableau dès qu'il est connu.</p>
-      <div class="winner-result-grid">
-        <div class="winner-result-card">
-          <div class="wrc-title wrc-t1">🔵 Vainqueur Tableau 1</div>
-          <input type="text" id="real-winner-t1" placeholder="Nom du vainqueur">
-        </div>
-        <div class="winner-result-card">
-          <div class="wrc-title wrc-t2">🔴 Vainqueur Tableau 2</div>
-          <input type="text" id="real-winner-t2" placeholder="Nom du vainqueur">
-        </div>
-        <div class="winner-result-card">
-          <div class="wrc-title wrc-t3">🟡 Vainqueur Tableau 3</div>
-          <input type="text" id="real-winner-t3" placeholder="Nom du vainqueur">
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-yellow" onclick="saveWinners()">💾 Enregistrer les vainqueurs</button>
-      </div>
+      <p class="note" style="margin-bottom:16px;">Les vainqueurs sont déterminés automatiquement depuis le résultat du match 1 du tour 3 (joueur classé 1er). Cette section est affichée à titre indicatif.</p>
+      <div id="winners-display" style="display:flex;gap:16px;flex-wrap:wrap;"></div>
     </div>
 
     <!-- ── RÉSULTATS DES MATCHS ── -->
@@ -441,11 +425,17 @@ function initAdmin() {
 }
 
 function loadWinnerFields(data) {
-  const r = data.results || {};
-  ['t1','t2','t3'].forEach(t => {
-    const el = document.getElementById(`real-winner-${t}`);
-    if (el) el.value = r[`winner_${t}`] || '';
-  });
+  const results = data.results || {};
+  const wrap = document.getElementById('winners-display');
+  if (!wrap) return;
+  const colors = ['#6eb4ff','#ff8090','var(--yellow)'];
+  wrap.innerHTML = [1,2,3].map((tabNum, i) => {
+    const w = getActualWinner(tabNum, results);
+    return `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 18px;min-width:180px;">
+      <div style="font-family:'Russo One',sans-serif;font-size:0.78rem;color:${colors[i]};margin-bottom:8px;">Tableau ${tabNum}</div>
+      <div style="font-size:0.9rem;font-weight:600;color:${w ? '#fff' : 'rgba(255,255,255,0.25)'};">${w ? '🏆 ' + esc(w) : '— pas encore joué'}</div>
+    </div>`;
+  }).join('');
 }
 
 function saveWinners() {
@@ -542,7 +532,6 @@ function saveMatchResult(matchKey) {
 
   if (!match) { notify('❌ Match introuvable.', true); return; }
 
-  // Vérification 4 joueurs définis
   const realPlayers = match.players.filter(p => p && p !== '-');
   if (realPlayers.length < 4) {
     notify('❌ Les 4 joueurs doivent être définis avant de valider ce match.', true);
@@ -567,6 +556,7 @@ function saveMatchResult(matchKey) {
   saveData(data);
   renderMatchResults(data);
   renderBettorsList(data);
+  loadWinnerFields(data);
   notify('✅ Résultat enregistré !');
 }
 
@@ -632,6 +622,14 @@ function deleteBettor(name) {
 /* ════════════════════════════════════════════════════════════
    CALCUL DES SCORES
 ════════════════════════════════════════════════════════════ */
+/* Retourne le vainqueur réel d'un tableau = joueur classé 1er du match 1 du tour 3 */
+function getActualWinner(tabNumber, results) {
+  const key = `t${tabNumber}_tour3_m0`;
+  const res = results[key];
+  if (!res || !res.played || !res.ranks) return null;
+  return Object.entries(res.ranks).find(([, rank]) => String(rank) === '1')?.[0] || null;
+}
+
 function computeScore(bettor, results) {
   let matchPts = 0, winnerPts = 0;
   const bets = bettor.bets || {};
@@ -642,15 +640,12 @@ function computeScore(bettor, results) {
       if (res.ranks && res.ranks[player] && String(res.ranks[player])===String(predictedRank)) matchPts++;
     }
   }
-  ['t1','t2','t3'].forEach(tab => {
-    const actual = results[`winner_${tab}`];
+  [1, 2, 3].forEach(tabNum => {
+    const tab = `t${tabNum}`;
+    const actual = getActualWinner(tabNum, results);
     if (!actual) return;
     const p0 = (bettor.winnerBets_p0||{})[tab];
-    if (p0 && p0===actual) winnerPts += 20;
-    const p1 = (bettor.winnerBets_p1||{})[tab];
-    if (p1 && p1===actual) winnerPts += 10;
-    const p2 = (bettor.winnerBets_p2||{})[tab];
-    if (p2 && p2===actual) winnerPts += 5;
+    if (p0 && p0 === actual) winnerPts += 20;
   });
   return { total:matchPts+winnerPts, matchPts, winnerPts };
 }
