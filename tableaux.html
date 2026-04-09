@@ -328,11 +328,30 @@
     const RANK_EMOJI  = { "1":"🥇","2":"🥈","3":"🥉","4":"🍌" };
     const RANK_LABEL  = { "1":"1er","2":"2e","3":"3e","4":"4e" };
 
-    function getRankBadgeHtml(key, playerName, results) {
+    // Pour le tour 3, offset de classement selon le match (0-indexé) et le tableau
+    // Tableau 1 : M1→1-4, M2→5-8, M3→9-12, M4→13-16
+    // Tableau 2 : M1→17-20, M2→21-24, M3→25-28, M4→29-32
+    // Tableau 3 : M1→33-36, M2→37-40, M3→41-44, M4→45-48
+    function getTour3Offset(tableNumber, matchIndex) {
+      const base = (tableNumber - 1) * 16; // 0, 16, 32
+      return base + matchIndex * 4;        // +0, +4, +8, +12
+    }
+
+    function getRankBadgeHtml(key, playerName, results, tour, tableNumber, matchIndex) {
       if (!results) return '<span class="row-score">—</span>';
       const res = results[key];
       if (!res || !res.played || !res.ranks || !res.ranks[playerName]) return '<span class="row-score">—</span>';
       const r = String(res.ranks[playerName]);
+
+      if (tour === 3) {
+        const offset = getTour3Offset(tableNumber, matchIndex);
+        const finalPlace = offset + Number(r);
+        // Médaille seulement pour les 3 premières places du classement général
+        const medal = finalPlace === 1 ? '🥇' : finalPlace === 2 ? '🥈' : finalPlace === 3 ? '🥉' : '';
+        const suffix = finalPlace === 1 ? 'er' : 'e';
+        return `<span class="row-rank rank-${r}">${medal} ${finalPlace}${suffix}</span>`;
+      }
+
       return `<span class="row-rank rank-${r}">${RANK_EMOJI[r] || ''} ${RANK_LABEL[r] || r}</span>`;
     }
 
@@ -453,7 +472,7 @@
                 <span class="row-origin">${slot}</span>
                 <span class="row-emoji">${rng(TOUR3_EMOJI)}</span>
                 <span class="row-name${isTbd ? ' tbd' : ''}">${isTbd ? 'À définir' : pName}</span>
-                ${!isTbd ? getRankBadgeHtml(key, pName, results) : '<span></span>'}
+                ${!isTbd ? getRankBadgeHtml(key, pName, results, 3, bracket.tableNumber, mi) : '<span></span>'}
               </div>`;
             }).join("")}`;
           col3.appendChild(card);
