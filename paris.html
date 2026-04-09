@@ -42,9 +42,13 @@
     .warning-line { color:rgba(255,255,255,0.86) !important; font-size:0.82rem !important; }
     .points-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:10px; margin-top:14px; }
     .point-item { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:12px; min-height:84px; }
-    .point-badge { min-width:54px; text-align:center; font-family:'Russo One',sans-serif; color:#74adff; line-height:1; flex-shrink:0; }
-    .point-value { display:block; font-size:1.2rem; }
-    .point-unit { display:block; font-size:0.9rem; margin-top:4px; opacity:0.9; letter-spacing:0.06em; }
+    .point-badge {
+      min-width:54px; text-align:center; font-family:'Russo One',sans-serif;
+      color:#74adff; line-height:1; flex-shrink:0;
+      display:flex; align-items:baseline; justify-content:center; gap:3px;
+    }
+    .point-value { font-size:1.2rem; }
+    .point-unit  { font-size:0.9rem; opacity:0.9; letter-spacing:0.06em; }
     .point-desc { font-size:0.77rem; color:rgba(255,255,255,0.58); line-height:1.45; }
     .phase-tabs { display:flex; gap:12px; margin-bottom:32px; flex-wrap:wrap; }
     .phase-tab {
@@ -108,17 +112,17 @@
       transform:translate(-50%,-50%);
       z-index:30;
       background:rgba(5,8,24,0.97);
-      border:1px solid rgba(255,255,255,0.18);
+      border:1px solid rgba(255,255,255,0.28);
       border-radius:10px;
       padding:9px 14px;
       font-size:0.76rem;
-      color:rgba(255,255,255,0.88);
+      color:#ffffff;
       text-align:center;
       white-space:nowrap;
       pointer-events:none;
       opacity:0;
       transition:opacity 0.15s;
-      box-shadow:0 6px 20px rgba(0,0,0,0.4);
+      box-shadow:0 6px 20px rgba(0,0,0,0.5);
       font-family:'Exo 2',sans-serif;
       letter-spacing:0.04em;
     }
