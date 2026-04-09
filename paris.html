@@ -683,9 +683,9 @@ function validateNoDuplicateRanks(phase) {
 function buildBody(phase, name) {
   const phaseLabels = ["Avant le tournoi","Après Tour 1","Après Tour 2"];
   const winPts = [20,10,5];
-  const w1 = phase === 0 ? (document.getElementById(`winner-t1-0`)?.value || 'Non renseigné') : 'N/A';
-  const w2 = phase === 0 ? (document.getElementById(`winner-t2-0`)?.value || 'Non renseigné') : 'N/A';
-  const w3 = phase === 0 ? (document.getElementById(`winner-t3-0`)?.value || 'Non renseigné') : 'N/A';
+  const w1 = phase === 0 ? (document.getElementById(`winner-t1-0`)?.value || 'Non renseigné') : 'Non renseigné';
+  const w2 = phase === 0 ? (document.getElementById(`winner-t2-0`)?.value || 'Non renseigné') : 'Non renseigné';
+  const w3 = phase === 0 ? (document.getElementById(`winner-t3-0`)?.value || 'Non renseigné') : 'Non renseigné';
   let lines = [
     `PARIEUR;${name}`,`PHASE;${phaseLabels[phase]}`,``,
     `=== GAGNANTS FINAUX (${winPts[phase]} pts chacun) ===`,
