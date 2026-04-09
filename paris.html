@@ -806,8 +806,7 @@ function finalSend(phase, name){
 }
 
 function submitBets(phase){
-  const nameInput = getPhaseNameInput(phase);
-  const name = nameInput?.value.trim();
+  const name = (document.getElementById('bettor-name-global')?.value || '').trim();
   if (!name) { alert('Veuillez entrer votre nom avant d\'envoyer vos paris.'); return; }
   const duplicateMatches = validateNoDuplicateRanks(phase);
   if (duplicateMatches.length>0) { alert('Impossible d\'envoyer : dans une poule ou un match, deux joueurs ne peuvent pas avoir le même rang.'); return; }
