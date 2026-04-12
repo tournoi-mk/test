@@ -164,19 +164,7 @@
       </p>
       <div class="field-group">
         <label>Contenu du mail</label>
-        <textarea id="mail-import-text" style="min-height:260px;" placeholder="PARIEUR;Greg C
-PHASE;Avant le tournoi
-
-=== GAGNANTS FINAUX (20 pts chacun) ===
-Tableau;Vainqueur prédit
-Tableau 1 (1er général);Julie
-Tableau 2 (17e général);Thierry
-Tableau 3 (33e général);Lydie
-
-=== PARIS SUR LES MATCHS (1 pt/joueur bien classé) ===
-Tableau;Match;Joueur;Rang prédit
-Tableau 1;Poule A;Mathieu B.;2
-Tableau 1;Poule A;Julie;1"></textarea>
+        <textarea id="mail-import-text" style="min-height:260px;" placeholder="Collez ici le contenu du mail reçu…"></textarea>
       </div>
       <div class="btn-row">
         <button class="btn btn-green" onclick="importBetFromEmail()">✅ Importer le mail</button>
@@ -783,7 +771,7 @@ function importBetFromEmail() {
       if (!newPick) return;
 
       // Déjà un pari sur ce gagnant (toutes phases confondues) → bloquer
-      const alreadyBet = ['p0','p1','p2'].some(ph => (bettor[`winnerBets_${ph}`]||{})[tab]);
+      const alreadyBet = ['p0','p1','p2'].some(ph => { const v=(bettor[`winnerBets_${ph}`]||{})[tab]; return v && v.trim(); });
       if (alreadyBet) {
         messages.push(`⏭ Gagnant T${ti+1} ignoré (déjà un pari enregistré pour ${bettorName}).`);
         return;
