@@ -159,9 +159,8 @@
     <div class="admin-section">
       <div class="admin-section-title ast-green">📥 Importer un pari depuis un e-mail</div>
       <p class="import-help">
-        Collez ici le contenu brut reçu par e-mail, exactement dans ce format :
-        <code>PARIEUR;Nom</code>, <code>PHASE;Avant le tournoi</code>, puis les lignes de gagnants et de matchs.<br>
-        Pour une même personne, un seul pari par match par tour est accepté.
+        Collez ici le contenu brut reçu par e-mail. Le format multi-phases (plusieurs tableaux à des rythmes différents) est supporté automatiquement.<br>
+        Les paris sur des matchs déjà enregistrés sont ignorés ; les nouveaux matchs sont ajoutés. Un pari sur le vainqueur final ne peut être enregistré qu'une seule fois par personne.
       </p>
       <div class="field-group">
         <label>Contenu du mail</label>
@@ -634,39 +633,91 @@ function parsePhaseLabelToCode(label) {
 function getTourFromPhase(phase) { return {p0:1,p1:2,p2:3}[phase]||1; }
 
 function parseEmailBetText(rawText) {
-  const lines = String(rawText||'').replace(/\r/g,'').split('\n').map(l=>l.trim()).filter(Boolean);
-  const bettorLine = lines.find(l=>l.toUpperCase().startsWith('PARIEUR;'));
-  const phaseLine  = lines.find(l=>l.toUpperCase().startsWith('PHASE;'));
+  const lines = String(rawText||'').replace(/\r/g,'').split('\n').map(l=>l.trim());
+  const nonEmpty = lines.filter(Boolean);
+  const bettorLine = nonEmpty.find(l=>l.toUpperCase().startsWith('PARIEUR;'));
   if (!bettorLine) throw new Error('Ligne PARIEUR introuvable.');
-  if (!phaseLine)  throw new Error('Ligne PHASE introuvable.');
   const bettorName = bettorLine.split(';').slice(1).join(';').trim();
-  const phaseLabel = phaseLine.split(';').slice(1).join(';').trim();
-  const phase = parsePhaseLabelToCode(phaseLabel);
   if (!bettorName) throw new Error('Nom du parieur vide.');
-  if (!phase) throw new Error('Phase non reconnue : '+phaseLabel);
-  const winnerBets = {};
-  const rows = [];
-  let inWinners=false, inMatches=false;
-  for (const line of lines) {
-    if (line.startsWith('=== GAGNANTS FINAUX'))     { inWinners=true;  inMatches=false; continue; }
-    if (line.startsWith('=== PARIS SUR LES MATCHS')){ inWinners=false; inMatches=true;  continue; }
-    if (inWinners) {
-      if (/^Tableau;Vainqueur prédit$/i.test(line)) continue;
-      const parts = line.split(';');
-      if (parts.length>=2 && /^Tableau\s+[123]/i.test(parts[0])) {
-        const tc=parts[0].trim(), wn=parts.slice(1).join(';').trim();
-        if (/^Tableau\s+1/i.test(tc)) winnerBets.t1=wn;
-        if (/^Tableau\s+2/i.test(tc)) winnerBets.t2=wn;
-        if (/^Tableau\s+3/i.test(tc)) winnerBets.t3=wn;
+
+  // Detect format: multi-phase (=== PHASE : ...) vs legacy (PHASE;...)
+  const isMultiPhase = nonEmpty.some(l => /^===\s*PHASE\s*:/i.test(l));
+
+  if (isMultiPhase) {
+    // Multi-phase format: collect all phases present in the email
+    const phases = []; // [{phase, winnerBets, rows}]
+    let currentPhase = null, currentWinners = {}, currentRows = [];
+    let inWinners = false, inMatches = false;
+
+    const flush = () => {
+      if (currentPhase) phases.push({ phase: currentPhase, winnerBets: currentWinners, rows: currentRows });
+    };
+
+    for (const line of lines) {
+      const phaseMatch = line.match(/^===\s*PHASE\s*:\s*(.+?)\s*===/i);
+      if (phaseMatch) {
+        flush();
+        const label = phaseMatch[1].trim();
+        currentPhase = parsePhaseLabelToCode(label);
+        if (!currentPhase) throw new Error('Phase non reconnue : ' + label);
+        currentWinners = {}; currentRows = []; inWinners = false; inMatches = false;
+        continue;
+      }
+      if (!currentPhase) continue;
+      if (/^--\s*Gagnants finaux/i.test(line))     { inWinners=true;  inMatches=false; continue; }
+      if (/^--\s*Paris sur les matchs/i.test(line)) { inWinners=false; inMatches=true;  continue; }
+      if (/^===/.test(line))                         { inWinners=false; inMatches=false; continue; }
+      if (inWinners) {
+        if (/^Tableau;Vainqueur prédit$/i.test(line)) continue;
+        const parts = line.split(';');
+        if (parts.length>=2 && /^Tableau\s+[123]/i.test(parts[0])) {
+          const tc=parts[0].trim(), wn=parts.slice(1).join(';').trim();
+          if (/^Tableau\s+1/i.test(tc)) currentWinners.t1=wn;
+          if (/^Tableau\s+2/i.test(tc)) currentWinners.t2=wn;
+          if (/^Tableau\s+3/i.test(tc)) currentWinners.t3=wn;
+        }
+      }
+      if (inMatches) {
+        if (/^Tableau;Match;Joueur;Rang prédit$/i.test(line)) continue;
+        const parts = line.split(';');
+        if (parts.length>=4) currentRows.push({ tableauLabel:parts[0].trim(), matchName:parts[1].trim(), player:parts[2].trim(), rank:parts[3].trim() });
       }
     }
-    if (inMatches) {
-      if (/^Tableau;Match;Joueur;Rang prédit$/i.test(line)) continue;
-      const parts = line.split(';');
-      if (parts.length>=4) rows.push({ tableauLabel:parts[0].trim(), matchName:parts[1].trim(), player:parts[2].trim(), rank:parts[3].trim() });
+    flush();
+    if (phases.length === 0) throw new Error('Aucune phase trouvée dans le mail.');
+    return { bettorName, multiPhase: true, phases };
+
+  } else {
+    // Legacy single-phase format
+    const phaseLine = nonEmpty.find(l=>l.toUpperCase().startsWith('PHASE;'));
+    if (!phaseLine) throw new Error('Ligne PHASE introuvable.');
+    const phaseLabel = phaseLine.split(';').slice(1).join(';').trim();
+    const phase = parsePhaseLabelToCode(phaseLabel);
+    if (!phase) throw new Error('Phase non reconnue : '+phaseLabel);
+    const winnerBets = {};
+    const rows = [];
+    let inWinners=false, inMatches=false;
+    for (const line of nonEmpty) {
+      if (line.startsWith('=== GAGNANTS FINAUX'))     { inWinners=true;  inMatches=false; continue; }
+      if (line.startsWith('=== PARIS SUR LES MATCHS')){ inWinners=false; inMatches=true;  continue; }
+      if (inWinners) {
+        if (/^Tableau;Vainqueur prédit$/i.test(line)) continue;
+        const parts = line.split(';');
+        if (parts.length>=2 && /^Tableau\s+[123]/i.test(parts[0])) {
+          const tc=parts[0].trim(), wn=parts.slice(1).join(';').trim();
+          if (/^Tableau\s+1/i.test(tc)) winnerBets.t1=wn;
+          if (/^Tableau\s+2/i.test(tc)) winnerBets.t2=wn;
+          if (/^Tableau\s+3/i.test(tc)) winnerBets.t3=wn;
+        }
+      }
+      if (inMatches) {
+        if (/^Tableau;Match;Joueur;Rang prédit$/i.test(line)) continue;
+        const parts = line.split(';');
+        if (parts.length>=4) rows.push({ tableauLabel:parts[0].trim(), matchName:parts[1].trim(), player:parts[2].trim(), rank:parts[3].trim() });
+      }
     }
+    return { bettorName, multiPhase: false, phases: [{ phase, winnerBets, rows }] };
   }
-  return { bettorName, phase, phaseLabel, winnerBets, rows };
 }
 
 function findMatchKeyFromImportedRow(phase, tableauLabel, matchName, playerName, MATCH_DEFS) {
@@ -694,68 +745,78 @@ function importBetFromEmail() {
   const results = data.results || {};
   const locks = data.winnerLocks || {};
   const MATCH_DEFS = buildMatchDefs(results);
-  const { bettorName, phase, winnerBets, rows } = parsed;
+  const { bettorName, phases } = parsed;
 
   let bettor = data.bettors.find(b => normalizeName(b.name)===normalizeName(bettorName));
   if (!bettor) { bettor = createEmptyBettor(bettorName); data.bettors.push(bettor); }
 
-  const groupedByMatch = {};
-  const unresolved = [];
-  rows.forEach(r => {
-    const key = findMatchKeyFromImportedRow(phase, r.tableauLabel, r.matchName, r.player, MATCH_DEFS);
-    if (!key) { unresolved.push(`${r.tableauLabel} / ${r.matchName} / ${r.player}`); return; }
-    if (!groupedByMatch[key]) groupedByMatch[key] = {};
-    groupedByMatch[key][r.player] = r.rank;
-  });
+  const messages = [];
+  let totalImported = 0, totalSkipped = 0, totalUnresolved = 0;
 
-  const duplicateMatches = [];
-  Object.keys(groupedByMatch).forEach(key => {
-    if (bettor.bets[key] && Object.keys(bettor.bets[key]).length > 0) {
-      const overlap = Object.keys(groupedByMatch[key]).some(p => Object.keys(bettor.bets[key]).includes(p));
-      if (overlap) duplicateMatches.push(key);
-    }
-  });
-  if (duplicateMatches.length > 0) {
-    const names = duplicateMatches.map(k => { const m=MATCH_DEFS.find(x=>x.key===k); return m?`${m.label} / ${m.name}`:k; }).join(', ');
-    notify(`❌ Doublon détecté pour ${bettorName} sur : ${names}. Paris existant conservé.`, true);
-    return;
+  for (const { phase, winnerBets, rows } of phases) {
+    // ── Matchs ──
+    const groupedByMatch = {};
+    rows.forEach(r => {
+      const key = findMatchKeyFromImportedRow(phase, r.tableauLabel, r.matchName, r.player, MATCH_DEFS);
+      if (!key) { totalUnresolved++; return; }
+      if (!groupedByMatch[key]) groupedByMatch[key] = {};
+      groupedByMatch[key][r.player] = r.rank;
+    });
+
+    Object.entries(groupedByMatch).forEach(([key, bet]) => {
+      if (bettor.bets[key] && Object.keys(bettor.bets[key]).length > 0) {
+        // Match déjà parié : on ignore
+        const m = MATCH_DEFS.find(x=>x.key===key);
+        messages.push(`⏭ ${m ? m.label+' / '+m.name : key} ignoré (déjà parié).`);
+        totalSkipped++;
+        return;
+      }
+      if (!bettor.bets[key]) bettor.bets[key] = {};
+      Object.assign(bettor.bets[key], bet);
+      totalImported++;
+    });
+
+    // ── Gagnants finaux ──
+    bettor[`winnerBets_${phase}`] = bettor[`winnerBets_${phase}`] || {};
+    ['t1','t2','t3'].forEach((tab, ti) => {
+      const newPick = winnerBets[tab];
+      if (!newPick) return;
+
+      // Déjà un pari sur ce gagnant (toutes phases confondues) → bloquer
+      const alreadyBet = ['p0','p1','p2'].some(ph => (bettor[`winnerBets_${ph}`]||{})[tab]);
+      if (alreadyBet) {
+        messages.push(`⏭ Gagnant T${ti+1} ignoré (déjà un pari enregistré pour ${bettorName}).`);
+        return;
+      }
+
+      if (locks[tab]) {
+        messages.push(`🔒 Gagnant T${ti+1} ignoré (verrouillé par l'admin).`);
+        return;
+      }
+
+      const eligible = getEligibleWinnerPlayers(ti, phase, results);
+      if ((phase==='p1'||phase==='p2') && eligible.length>0 && !eligible.includes(newPick)) {
+        messages.push(`⚠️ ${newPick} n'est plus éligible comme vainqueur T${ti+1}.`);
+        return;
+      }
+
+      bettor[`winnerBets_${phase}`][tab] = newPick;
+    });
+
+    if (!bettor.phases.includes(phase)) bettor.phases.push(phase);
   }
 
-  Object.entries(groupedByMatch).forEach(([key, bet]) => { if(!bettor.bets[key]) bettor.bets[key]={}; Object.assign(bettor.bets[key], bet); });
-
-  bettor[`winnerBets_${phase}`] = bettor[`winnerBets_${phase}`] || {};
-  ['t1','t2','t3'].forEach((tab, ti) => {
-    const newPick = winnerBets[tab];
-    if (!newPick) return;
-
-    // Vérifier le verrou
-    if (locks[tab]) {
-      notify(`⚠️ Paris sur le gagnant du Tableau ${ti+1} ignoré : cette option est verrouillée par l'admin.`, true);
-      return;
-    }
-
-    const eligible = getEligibleWinnerPlayers(ti, phase, results);
-    if ((phase==='p1'||phase==='p2') && eligible.length>0 && !eligible.includes(newPick)) {
-      notify(`⚠️ ${newPick} n'est plus éligible comme vainqueur du Tableau ${ti+1}.`, true);
-      return;
-    }
-    const existingP0 = (bettor.winnerBets_p0||{})[tab];
-    if (phase==='p1' && existingP0 && eligible.includes(existingP0)) { notify(`ℹ️ Pari p1 T${ti+1} ignoré : ${existingP0} (p0) est toujours éligible.`); return; }
-    const existingP1 = (bettor.winnerBets_p1||{})[tab];
-    if (phase==='p2' && existingP1 && eligible.includes(existingP1)) { notify(`ℹ️ Pari p2 T${ti+1} ignoré : ${existingP1} (p1) est toujours éligible.`); return; }
-    const existingP0b = (bettor.winnerBets_p0||{})[tab];
-    if (phase==='p2' && existingP0b && eligible.includes(existingP0b)) { notify(`ℹ️ Pari p2 T${ti+1} ignoré : ${existingP0b} (p0) est toujours éligible.`); return; }
-
-    bettor[`winnerBets_${phase}`][tab] = newPick;
-  });
-
-  if (!bettor.phases.includes(phase)) bettor.phases.push(phase);
   saveData(data);
   renderBettorsList(data);
   updateRawPreview(data);
-  if (unresolved.length>0) notify(`⚠️ Import partiel : ${bettorName} importé, ${unresolved.length} ligne(s) non résolue(s).`, true);
-  else notify(`✅ Pari importé pour ${bettorName} (${phase}) !`);
   clearMailImport();
+
+  // Résumé
+  let summary = `✅ ${bettorName} : ${totalImported} match(s) importé(s)`;
+  if (totalSkipped > 0) summary += `, ${totalSkipped} ignoré(s) (doublon)`;
+  if (totalUnresolved > 0) summary += `, ${totalUnresolved} non résolu(s)`;
+  notify(summary, totalImported === 0 && totalUnresolved > 0);
+  if (messages.length > 0) console.info('[Import paris]', messages.join('\n'));
 }
 
 function exportData() {
