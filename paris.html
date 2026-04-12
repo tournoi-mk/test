@@ -701,29 +701,59 @@ function validateNoDuplicateRanks(phase) {
 function buildBody(phase, name) {
   const phaseLabels = ["Avant le tournoi","Après Tour 1","Après Tour 2"];
   const winPts = [20,10,5];
-  const w1 = phase === 0 ? (document.getElementById(`winner-t1-0`)?.value || 'Non renseigné') : 'Non renseigné';
-  const w2 = phase === 0 ? (document.getElementById(`winner-t2-0`)?.value || 'Non renseigné') : 'Non renseigné';
-  const w3 = phase === 0 ? (document.getElementById(`winner-t3-0`)?.value || 'Non renseigné') : 'Non renseigné';
-  let lines = [
-    `PARIEUR;${name}`,`PHASE;${phaseLabels[phase]}`,``,
-    `=== GAGNANTS FINAUX (${winPts[phase]} pts chacun) ===`,
-    `Tableau;Vainqueur prédit`,
-    `Tableau 1 (1er général);${w1}`,
-    `Tableau 2 (17e général);${w2}`,
-    `Tableau 3 (33e général);${w3}`,``,
-    `=== PARIS SUR LES MATCHS (1 pt/joueur bien classé) ===`,
-    `Tableau;Match;Joueur;Rang prédit`
-  ];
   const sources = [BRACKETS_TOUR1,BRACKETS_TOUR2,BRACKETS_TOUR3];
   const prefixFn = [(bi,gi)=>`p0t${bi+1}g${gi}`,(bi,mi)=>`p1t${bi+1}m${mi}`,(bi,mi)=>`p2t${bi+1}m${mi}`];
   const groups   = [(br)=>br.groups,(br)=>br.matches,(br)=>br.matches];
-  sources[phase].forEach((br,bi) => {
-    groups[phase](br).forEach((item,idx) => {
-      item.players.forEach((p,pi) => {
-        if (p && p!=='-') lines.push(`${br.label};${item.name};${p};${getRank(prefixFn[phase](bi,idx),pi)}`);
+
+  // Collect all phases that have at least one bet filled in
+  const phasesToInclude = [];
+  for (let ph = 0; ph <= 2; ph++) {
+    const hasWinner = [0,1,2].some(ti => {
+      const el = document.getElementById(`winner-t${ti+1}-${ph}`);
+      return el && !el.disabled && el.value;
+    });
+    const hasBet = sources[ph].some((br,bi) =>
+      groups[ph](br).some((item,idx) => {
+        const prefix = prefixFn[ph](bi,idx);
+        return getSelectsByPrefix(prefix).some(s => s.value);
+      })
+    );
+    if (hasWinner || hasBet) phasesToInclude.push(ph);
+  }
+  // Always include the current phase even if empty
+  if (!phasesToInclude.includes(phase)) phasesToInclude.push(phase);
+  phasesToInclude.sort();
+
+  let lines = [`PARIEUR;${name}`, ``];
+
+  phasesToInclude.forEach(ph => {
+    const w1 = document.getElementById(`winner-t1-${ph}`)?.value || 'Non renseigné';
+    const w2 = document.getElementById(`winner-t2-${ph}`)?.value || 'Non renseigné';
+    const w3 = document.getElementById(`winner-t3-${ph}`)?.value || 'Non renseigné';
+
+    lines.push(`=== PHASE : ${phaseLabels[ph].toUpperCase()} ===`);
+
+    const hasWinnerSection = [w1,w2,w3].some(w => w && w !== 'Non renseigné');
+    if (hasWinnerSection || ph === 0) {
+      lines.push(``, `-- Gagnants finaux (${winPts[ph]} pts chacun) --`);
+      lines.push(`Tableau;Vainqueur prédit`);
+      lines.push(`Tableau 1 (1er général);${w1}`);
+      lines.push(`Tableau 2 (17e général);${w2}`);
+      lines.push(`Tableau 3 (33e général);${w3}`);
+    }
+
+    lines.push(``, `-- Paris sur les matchs (1 pt/joueur bien classé) --`);
+    lines.push(`Tableau;Match;Joueur;Rang prédit`);
+    sources[ph].forEach((br,bi) => {
+      groups[ph](br).forEach((item,idx) => {
+        item.players.forEach((p,pi) => {
+          if (p && p!=='-') lines.push(`${br.label};${item.name};${p};${getRank(prefixFn[ph](bi,idx),pi)}`);
+        });
       });
     });
+    lines.push(``);
   });
+
   return lines.join('\n');
 }
 
@@ -753,26 +783,49 @@ document.getElementById('confirm-incomplete-btn').addEventListener('click', () =
 
 function collectPreviewData(phase, name) {
   const phaseLabels=["Avant le tournoi","Après Tour 1","Après Tour 2"];
+  const winPts=[20,10,5];
   const sources=[BRACKETS_TOUR1,BRACKETS_TOUR2,BRACKETS_TOUR3];
   const prefixFn=[(bi,gi)=>`p0t${bi+1}g${gi}`,(bi,mi)=>`p1t${bi+1}m${mi}`,(bi,mi)=>`p2t${bi+1}m${mi}`];
   const groups=[(br)=>br.groups,(br)=>br.matches,(br)=>br.matches];
-  return {
-    name, phaseLabel:phaseLabels[phase],
+
+  // Same logic as buildBody: collect all phases with at least one bet
+  const phasesToInclude = [];
+  for (let ph = 0; ph <= 2; ph++) {
+    const hasWinner = [0,1,2].some(ti => {
+      const el = document.getElementById(`winner-t${ti+1}-${ph}`);
+      return el && !el.disabled && el.value;
+    });
+    const hasBet = sources[ph].some((br,bi) =>
+      groups[ph](br).some((item,idx) => {
+        const prefix = prefixFn[ph](bi,idx);
+        return getSelectsByPrefix(prefix).some(s => s.value);
+      })
+    );
+    if (hasWinner || hasBet) phasesToInclude.push(ph);
+  }
+  if (!phasesToInclude.includes(phase)) phasesToInclude.push(phase);
+  phasesToInclude.sort();
+
+  const phases = phasesToInclude.map(ph => ({
+    phaseLabel: phaseLabels[ph],
+    winPts: winPts[ph],
     winners:[
-      {label:'Tableau 1',value:document.getElementById(`winner-t1-${phase}`)?.value||'Non renseigné',color:'blue'},
-      {label:'Tableau 2',value:document.getElementById(`winner-t2-${phase}`)?.value||'Non renseigné',color:'red'},
-      {label:'Tableau 3',value:document.getElementById(`winner-t3-${phase}`)?.value||'Non renseigné',color:'yellow'}
+      {label:'Tableau 1',value:document.getElementById(`winner-t1-${ph}`)?.value||'Non renseigné',color:'blue'},
+      {label:'Tableau 2',value:document.getElementById(`winner-t2-${ph}`)?.value||'Non renseigné',color:'red'},
+      {label:'Tableau 3',value:document.getElementById(`winner-t3-${ph}`)?.value||'Non renseigné',color:'yellow'}
     ],
-    matches:sources[phase].flatMap((br,bi)=>
-      groups[phase](br).map((item,idx)=>({
+    matches:sources[ph].flatMap((br,bi)=>
+      groups[ph](br).map((item,idx)=>({
         tableau:br.label, color:br.color, block:item.name,
         lines:item.players.map((p,pi)=>{
           if(!p||p==='-') return null;
-          return {player:p,rank:getRank(prefixFn[phase](bi,idx),pi)};
+          return {player:p,rank:getRank(prefixFn[ph](bi,idx),pi)};
         }).filter(Boolean)
       }))
     )
-  };
+  }));
+
+  return { name, phases };
 }
 
 function rankLabel(rank){if(rank==='1')return'🥇 1er';if(rank==='2')return'🥈 2e';if(rank==='3')return'🥉 3e';if(rank==='4')return'🍌 4e';return'Non renseigné';}
@@ -782,20 +835,25 @@ function escapeHtml(str){return String(str).replaceAll('&','&amp;').replaceAll('
 function groupMatchesByTableau(matches){const map={};matches.forEach(m=>{if(!map[m.tableau])map[m.tableau]=[];map[m.tableau].push(m);});return map;}
 
 function renderPreview(preview){
-  const grouped=groupMatchesByTableau(preview.matches);
   const tableauColorClass={"Tableau 1":"tableau-blue","Tableau 2":"tableau-red","Tableau 3":"tableau-yellow"};
-  return `<div class="bets-preview"><h3>Récapitulatif de vos paris</h3>
-    <div class="preview-phase-line"><strong>Phase :</strong> ${escapeHtml(preview.phaseLabel)}</div>
-    <div class="preview-block"><div class="preview-title">Gagnants finaux</div>
-      <div class="preview-winners-grid">${preview.winners.map(w=>`<div class="preview-winner-card pw-${escapeHtml(w.color)}"><div class="pw-title">${escapeHtml(w.label)}</div><div class="pw-value">${escapeHtml(w.value)}</div></div>`).join('')}</div>
-    </div>
-    <div class="preview-block"><div class="preview-title">Matchs</div>
-      ${Object.keys(grouped).map(tn=>`<div class="preview-tableau-block">
-        <div class="preview-tableau-name ${tableauColorClass[tn]||''}">${escapeHtml(tn)}</div>
-        <div class="preview-matches-grid">${grouped[tn].map(match=>`<div class="preview-match-card pm-${escapeHtml(match.color)}"><div class="preview-match-title">${escapeHtml(match.block)}</div>${match.lines.map(line=>`<div class="preview-mini-line"><strong>${escapeHtml(line.player)}</strong> — ${escapeHtml(rankLabel(line.rank))}</div>`).join('')}</div>`).join('')}</div>
-      </div>`).join('')}
-    </div>
-  </div>`;
+  const phaseSections = preview.phases.map(ph => {
+    const grouped=groupMatchesByTableau(ph.matches);
+    return `
+    <div class="preview-phase-section">
+      <div class="preview-phase-line"><strong>Phase :</strong> ${escapeHtml(ph.phaseLabel)}</div>
+      <div class="preview-block"><div class="preview-title">Gagnants finaux</div>
+        <div class="preview-winners-grid">${ph.winners.map(w=>`<div class="preview-winner-card pw-${escapeHtml(w.color)}"><div class="pw-title">${escapeHtml(w.label)}</div><div class="pw-value">${escapeHtml(w.value)}</div></div>`).join('')}</div>
+      </div>
+      <div class="preview-block"><div class="preview-title">Matchs</div>
+        ${Object.keys(grouped).map(tn=>`<div class="preview-tableau-block">
+          <div class="preview-tableau-name ${tableauColorClass[tn]||''}">${escapeHtml(tn)}</div>
+          <div class="preview-matches-grid">${grouped[tn].map(match=>`<div class="preview-match-card pm-${escapeHtml(match.color)}"><div class="preview-match-title">${escapeHtml(match.block)}</div>${match.lines.map(line=>`<div class="preview-mini-line"><strong>${escapeHtml(line.player)}</strong> — ${escapeHtml(rankLabel(line.rank))}</div>`).join('')}</div>`).join('')}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('<hr style="border:none;border-top:1px solid rgba(255,255,255,0.10);margin:18px 0;">');
+
+  return `<div class="bets-preview"><h3>Récapitulatif de vos paris</h3>${phaseSections}</div>`;
 }
 
 function openMailClientAgain(){if(lastMailtoUrl)window.location.href=lastMailtoUrl;}
@@ -803,8 +861,10 @@ function openMailClientAgain(){if(lastMailtoUrl)window.location.href=lastMailtoU
 function finalSend(phase, name){
   const phaseLabels=["Avant le tournoi","Après Tour 1","Après Tour 2"];
   const body=buildBody(phase,name);
-  const subject=`[PARIS Mario Kart] ${phaseLabels[phase]} — ${name}`;
   const preview=collectPreviewData(phase,name);
+  // Build subject mentioning all phases included
+  const phaseStr = preview.phases.map(ph=>ph.phaseLabel).join(' + ');
+  const subject=`[PARIS Mario Kart] ${phaseStr} — ${name}`;
   lastMailtoUrl=`mailto:${EMAIL_DEST}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   window.location.href=lastMailtoUrl;
   setTimeout(()=>{
