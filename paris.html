@@ -912,12 +912,36 @@ function copyFallback(){
 /* ════════════════════════════════════════════════════════════
    INITIALISATION
 ════════════════════════════════════════════════════════════ */
+function hasAnyBettableMatch(phaseIndex) {
+  const sources = [BRACKETS_TOUR1, BRACKETS_TOUR2, BRACKETS_TOUR3];
+  const groups   = [(br)=>br.groups, (br)=>br.matches, (br)=>br.matches];
+  return sources[phaseIndex].some((br, bi) =>
+    groups[phaseIndex](br).some((item, idx) => {
+      const matchKey = phaseIndex === 0
+        ? `t${bi+1}_tour1_g${idx}`
+        : phaseIndex === 1
+          ? `t${bi+1}_tour2_m${idx}`
+          : `t${bi+1}_tour3_m${idx}`;
+      return hasAllFourPlayers(item.players) && !isMatchPlayed(matchKey);
+    })
+  );
+}
+
 function initPage() {
   loadAdminResults();
   const enriched = buildEnrichedBrackets(ADMIN_RESULTS);
   mapBracketsForBets(enriched);
   fillAllWinnerSelects();
   buildAllCards();
+
+  // Ouvrir automatiquement la première phase avec des matchs pariables
+  if (!hasAnyBettableMatch(0)) {
+    if (!hasAnyBettableMatch(1)) {
+      switchPhase('phase2');
+    } else {
+      switchPhase('phase1');
+    }
+  }
 }
 
 initPage();
