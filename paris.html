@@ -747,7 +747,12 @@ function buildBody(phase, name) {
     sources[ph].forEach((br,bi) => {
       groups[ph](br).forEach((item,idx) => {
         item.players.forEach((p,pi) => {
-          if (p && p!=='-') lines.push(`${br.label};${item.name};${p};${getRank(prefixFn[ph](bi,idx),pi)}`);
+          if (!p || p==='-') return;
+          const selectEl = document.getElementById(`${prefixFn[ph](bi,idx)}-r${pi}`);
+          if (!selectEl || selectEl.disabled) return; // match clos ou non dispo
+          const rank = selectEl.value;
+          if (!rank) return; // non renseigné
+          lines.push(`${br.label};${item.name};${p};${getRank(prefixFn[ph](bi,idx),pi)}`);
         });
       });
     });
@@ -819,6 +824,8 @@ function collectPreviewData(phase, name) {
         tableau:br.label, color:br.color, block:item.name,
         lines:item.players.map((p,pi)=>{
           if(!p||p==='-') return null;
+          const selectEl = document.getElementById(`${prefixFn[ph](bi,idx)}-r${pi}`);
+          if(!selectEl||selectEl.disabled||!selectEl.value) return null;
           return {player:p,rank:getRank(prefixFn[ph](bi,idx),pi)};
         }).filter(Boolean)
       }))
