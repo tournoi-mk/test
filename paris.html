@@ -200,6 +200,36 @@
     .modal-btn.primary{background:rgba(255,215,0,0.14);border-color:var(--yellow);color:var(--yellow);}
     @media(max-width:900px){.preview-winners-grid,.preview-matches-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
     @media(max-width:760px){.top-bar{grid-template-columns:1fr;padding:14px 18px;}.brand-wrap,.title-wrap,.back-wrap{justify-self:center;}.top-title{white-space:normal;}.preview-winners-grid,.preview-matches-grid{grid-template-columns:1fr;}}
+
+    /* ── Tooltip côtes vainqueur ── */
+    .winner-card{position:relative;}
+    .cotes-tooltip{
+      display:none;
+      position:absolute;
+      top:calc(100% + 10px);
+      left:0;
+      z-index:200;
+      width:260px;
+      background:rgba(7,7,30,0.97);
+      border:1px solid rgba(255,255,255,0.14);
+      border-radius:12px;
+      padding:14px 16px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.7);
+      pointer-events:none;
+    }
+    .winner-card:hover .cotes-tooltip{display:block;}
+    .cotes-tooltip-title{font-family:'Russo One',sans-serif;font-size:0.72rem;letter-spacing:0.1em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:10px;}
+    .cotes-tt-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+    .cotes-tt-row:last-child{margin-bottom:0;}
+    .cotes-tt-name{font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.85);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cotes-tt-bar-wrap{flex:1;margin:0 6px;}
+    .cotes-tt-bar-bg{height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;}
+    .cotes-tt-bar-fill{height:100%;border-radius:3px;}
+    .fill-t1{background:linear-gradient(90deg,#0052A5,#6eb4ff);}
+    .fill-t2{background:linear-gradient(90deg,#E8001D,#ff8090);}
+    .fill-t3{background:linear-gradient(90deg,#b8860b,#FFD700);}
+    .cotes-tt-count{font-family:'Russo One',sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.4);min-width:22px;text-align:right;}
+    .cotes-tt-empty{font-size:0.78rem;color:rgba(255,255,255,0.22);font-style:italic;text-align:center;padding:4px 0;}
   </style>
 </head>
 <body>
@@ -241,9 +271,21 @@
     <div class="section-title" style="color:var(--yellow)">🏆 Gagnants finaux <span class="section-pts">— 20 points par bonne réponse</span></div>
     <div class="section-divider"></div>
     <div class="winner-cards">
-      <div class="winner-card t1"><div class="winner-card-title">🥇 Vainqueur Tableau 1<span>1er au classement général</span></div><select class="winner-select" id="winner-t1-0"><option value="">— Choisir un joueur —</option></select></div>
-      <div class="winner-card t2"><div class="winner-card-title">🥇 Vainqueur Tableau 2<span>17e au classement général</span></div><select class="winner-select" id="winner-t2-0"><option value="">— Choisir un joueur —</option></select></div>
-      <div class="winner-card t3"><div class="winner-card-title">🥇 Vainqueur Tableau 3<span>33e au classement général</span></div><select class="winner-select" id="winner-t3-0"><option value="">— Choisir un joueur —</option></select></div>
+      <div class="winner-card t1">
+        <div class="winner-card-title">🥇 Vainqueur Tableau 1<span>1er au classement général</span></div>
+        <select class="winner-select" id="winner-t1-0"><option value="">— Choisir un joueur —</option></select>
+        <div class="cotes-tooltip"><div class="cotes-tooltip-title">Pronostics · Tableau 1</div><div id="cotes-tip-t1-body"></div></div>
+      </div>
+      <div class="winner-card t2">
+        <div class="winner-card-title">🥇 Vainqueur Tableau 2<span>17e au classement général</span></div>
+        <select class="winner-select" id="winner-t2-0"><option value="">— Choisir un joueur —</option></select>
+        <div class="cotes-tooltip"><div class="cotes-tooltip-title">Pronostics · Tableau 2</div><div id="cotes-tip-t2-body"></div></div>
+      </div>
+      <div class="winner-card t3">
+        <div class="winner-card-title">🥇 Vainqueur Tableau 3<span>33e au classement général</span></div>
+        <select class="winner-select" id="winner-t3-0"><option value="">— Choisir un joueur —</option></select>
+        <div class="cotes-tooltip"><div class="cotes-tooltip-title">Pronostics · Tableau 3</div><div id="cotes-tip-t3-body"></div></div>
+      </div>
     </div>
     <div class="section-title" style="color:rgba(255,255,255,0.8);margin-top:36px;">🏎️ Paris sur les matchs — Tour 1 <span class="section-pts">— 1 point par bonne réponse</span></div>
     <div class="section-divider"></div>
@@ -957,7 +999,7 @@ function renderCotesTooltips() {
     { key:'t3', fill:'fill-t3' },
   ];
   tabs.forEach(({ key, fill }) => {
-    const bodyEl = document.getElementById(`cotes-tip-${key}-0-body`);
+    const bodyEl = document.getElementById(`cotes-tip-${key}-body`);
     if (!bodyEl) return;
     const list = cotes[key] || [];
     const maxCount = list.length > 0 ? list[0].count : 1;
