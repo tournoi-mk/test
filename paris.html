@@ -927,12 +927,66 @@ function hasAnyBettableMatch(phaseIndex) {
   );
 }
 
+/* ════════════════════════════════════════════════════════════
+   CÔTES — calcul depuis localStorage et injection dans tooltips
+════════════════════════════════════════════════════════════ */
+function buildCotesFromStorage() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('mk_tournament_data') || 'null');
+    const bettors = stored?.bettors || [];
+    const cotes = { t1:{}, t2:{}, t3:{} };
+    bettors.forEach(b => {
+      ['p0','p1','p2'].forEach(phase => {
+        const wb = b[`winnerBets_${phase}`] || {};
+        ['t1','t2','t3'].forEach(tab => {
+          const pick = wb[tab];
+          if (pick) cotes[tab][pick] = (cotes[tab][pick] || 0) + 1;
+        });
+      });
+    });
+    const toArr = obj => Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([name,count])=>({name,count}));
+    return { t1: toArr(cotes.t1), t2: toArr(cotes.t2), t3: toArr(cotes.t3) };
+  } catch { return { t1:[], t2:[], t3:[] }; }
+}
+
+function renderCotesTooltips() {
+  const cotes = buildCotesFromStorage();
+  const tabs = [
+    { key:'t1', fill:'fill-t1' },
+    { key:'t2', fill:'fill-t2' },
+    { key:'t3', fill:'fill-t3' },
+  ];
+  tabs.forEach(({ key, fill }) => {
+    const bodyEl = document.getElementById(`cotes-tip-${key}-0-body`);
+    if (!bodyEl) return;
+    const list = cotes[key] || [];
+    const maxCount = list.length > 0 ? list[0].count : 1;
+    const totalVotes = list.reduce((s,x) => s + x.count, 0);
+    if (list.length === 0) {
+      bodyEl.innerHTML = '<div class="cotes-tt-empty">Aucun pronostic enregistré</div>';
+      return;
+    }
+    bodyEl.innerHTML = list.map((item, i) => `
+      <div class="cotes-tt-row">
+        <span class="cotes-tt-name">${i===0?'👑 ':''}${escapeHtml(item.name)}</span>
+        <div class="cotes-tt-bar-wrap">
+          <div class="cotes-tt-bar-bg">
+            <div class="cotes-tt-bar-fill ${fill}" style="width:${Math.round(item.count/maxCount*100)}%"></div>
+          </div>
+        </div>
+        <span class="cotes-tt-count">${item.count}×</span>
+      </div>`).join('') +
+      `<div style="margin-top:8px;font-size:0.7rem;color:rgba(255,255,255,0.22);text-align:right;">${totalVotes} vote${totalVotes>1?'s':''} au total</div>`;
+  });
+}
+
 function initPage() {
   loadAdminResults();
   const enriched = buildEnrichedBrackets(ADMIN_RESULTS);
   mapBracketsForBets(enriched);
   fillAllWinnerSelects();
   buildAllCards();
+  renderCotesTooltips();
 
   // Ouvrir automatiquement la première phase avec des matchs pariables
   if (!hasAnyBettableMatch(0)) {
